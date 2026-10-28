@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { clearSession, loadSession, saveSession } from './auth/session'
 import LoginButton from './components/LoginButton'
 import LoginPage from './components/LoginPage'
 import PushButton from './components/PushButton'
@@ -80,10 +81,19 @@ const activity = [
 const signalBars = [42, 68, 55, 84, 62, 96, 74, 58, 88, 66, 92, 78]
 
 function App() {
-  const [session, setSession] = useState('')
+  const [session, setSession] = useState(() => loadSession())
+
+  function handleSignIn(email, { remember = true } = {}) {
+    setSession(saveSession(email, remember))
+  }
+
+  function handleSignOut() {
+    clearSession()
+    setSession(null)
+  }
 
   if (!session) {
-    return <LoginPage onSignIn={setSession} />
+    return <LoginPage onSignIn={handleSignIn} />
   }
 
   return (
@@ -97,8 +107,10 @@ function App() {
           </div>
         </div>
         <div className="hero-actions">
-          <span className="session-chip">{session}</span>
-          <LoginButton label="Log out" onClick={() => setSession('')} />
+          <span className="session-chip" title={`Signed in since ${new Date(session.signedInAt).toLocaleString()}`}>
+            {session.email}
+          </span>
+          <LoginButton label="Log out" onClick={handleSignOut} />
           <PushButton>Control hub</PushButton>
         </div>
       </header>

@@ -721,34 +721,3 @@ a {
 .push-btn.auth-submit {
   width: 100%;
 }
-
-/* Login page: instant access */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0 16px;
-  color: var(--muted);
-  font-size: 0.76rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
-.auth-hint {
-  margin: 10px 0 0;
-  text-align: center;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.auth-footer {
-  margin-top: 14px;
-}
