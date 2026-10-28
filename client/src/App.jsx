@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import LoginButton from './components/LoginButton'
 import LoginPage from './components/LoginPage'
+import PushButton from './components/PushButton'
 
 const bots = [
   {
@@ -98,9 +99,7 @@ function App() {
         <div className="hero-actions">
           <span className="session-chip">{session}</span>
           <LoginButton label="Log out" onClick={() => setSession('')} />
-          <button type="button" className="primary-btn">
-            Launch console
-          </button>
+          <PushButton>Control hub</PushButton>
         </div>
       </header>
 

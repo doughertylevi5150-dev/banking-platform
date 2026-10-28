@@ -63,6 +63,10 @@ function LoginPage({ onSignIn }) {
     onSignIn?.(values.email.trim())
   }
 
+  function handleInstantAccess() {
+    onSignIn?.('Demo operator')
+  }
+
   const emailInvalid = Boolean(errors.email)
   const passwordInvalid = Boolean(errors.password)
 
@@ -162,6 +166,21 @@ function LoginPage({ onSignIn }) {
             Log in
           </PushButton>
         </form>
+
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+
+        <PushButton
+          variant="green"
+          className="auth-submit"
+          onClick={handleInstantAccess}
+        >
+          Enter the control hub
+        </PushButton>
+        <p className="auth-hint">
+          One press opens the hub. No credentials while sign-in is stubbed.
+        </p>
 
         <p className="auth-footer">
           New here? <a href="#access">Request console access</a>
