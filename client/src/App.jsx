@@ -1,3 +1,5 @@
+import LoginButton from './components/LoginButton'
+
 const bots = [
   {
     id: 'treasury',
@@ -86,9 +88,7 @@ function App() {
           </div>
         </div>
         <div className="hero-actions">
-          <button type="button" className="secondary-btn">
-            Sign in
-          </button>
+          <LoginButton />
           <button type="button" className="primary-btn">
             Launch console
           </button>

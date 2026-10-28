@@ -388,3 +388,39 @@ a {
     width: min(92%, 1200px);
   }
 }
+
+/* Login button */
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.login-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .topbar .hero-actions {
+    width: 100%;
+  }
+
+  .topbar .hero-actions > * {
+    flex: 1;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar .hero-actions > * {
+    white-space: nowrap;
+    padding: 11px 14px;
+  }
+
+  .login-btn-label {
+    display: none;
+  }
+}
