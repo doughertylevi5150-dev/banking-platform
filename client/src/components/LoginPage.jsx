@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import PushButton from './PushButton'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -157,9 +158,9 @@ function LoginPage({ onSignIn }) {
             </a>
           </div>
 
-          <button type="submit" className="primary-btn auth-submit">
+          <PushButton type="submit" className="auth-submit">
             Log in
-          </button>
+          </PushButton>
         </form>
 
         <p className="auth-footer">
