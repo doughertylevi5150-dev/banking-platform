@@ -2,6 +2,7 @@ function LoginButton({
   label = 'Log in',
   onClick,
   variant = 'secondary',
+  ariaLabel = 'Log in to your account',
   className = '',
 }) {
   const buttonClass = variant === 'primary' ? 'primary-btn' : 'secondary-btn'
@@ -11,7 +12,7 @@ function LoginButton({
       type="button"
       className={`${buttonClass} login-btn ${className}`.trim()}
       onClick={onClick}
-      aria-label="Log in to your account"
+      aria-label={ariaLabel}
     >
       <svg
         viewBox="0 0 24 24"
