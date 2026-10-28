@@ -424,3 +424,99 @@ a {
     display: none;
   }
 }
+
+/* Login card */
+.login-card {
+  max-width: 460px;
+  padding: 26px 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(18, 30, 46, 0.8);
+}
+
+.login-card form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-field {
+  display: grid;
+  gap: 7px;
+}
+
+.login-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  transition: 0.2s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(156, 176, 199, 0.55);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: rgba(90, 169, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(90, 169, 255, 0.18);
+}
+
+.login-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.login-row .primary-btn {
+  flex: 1 1 160px;
+}
+
+.login-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.login-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+.login-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.login-note .dot {
+  margin-top: 0;
+  background: currentColor;
+}
+
+.login-note.green {
+  color: var(--green);
+}
+
+.login-note.amber {
+  color: var(--amber);
+}

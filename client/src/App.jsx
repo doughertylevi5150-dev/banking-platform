@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import LoginButton from './components/LoginButton'
 
 const bots = [
@@ -76,6 +77,89 @@ const activity = [
 
 const signalBars = [42, 68, 55, 84, 62, 96, 74, 58, 88, 66, 92, 78]
 
+function LoginCard() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(true)
+  const [error, setError] = useState('')
+  const [signedIn, setSignedIn] = useState('')
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    if (!email.trim() || !password) {
+      setSignedIn('')
+      setError('Enter your email and password to continue.')
+      return
+    }
+
+    setError('')
+    setSignedIn(email.trim())
+  }
+
+  return (
+    <div className="login-card">
+      <span className="bot-badge green">Secure sign-in</span>
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="login-field">
+          <label htmlFor="login-email">Email</label>
+          <input
+            id="login-email"
+            className="login-input"
+            type="email"
+            autoComplete="email"
+            placeholder="you@bank.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </div>
+
+        <div className="login-field">
+          <label htmlFor="login-password">Password</label>
+          <input
+            id="login-password"
+            className="login-input"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
+
+        <div className="login-row">
+          <label className="login-check" htmlFor="login-remember">
+            <input
+              id="login-remember"
+              type="checkbox"
+              checked={remember}
+              onChange={(event) => setRemember(event.target.checked)}
+            />
+            Keep me signed in
+          </label>
+          <button type="submit" className="primary-btn">
+            Log in
+          </button>
+        </div>
+
+        {error && (
+          <p className="login-note amber" role="alert">
+            <span className="dot" />
+            {error}
+          </p>
+        )}
+
+        {signedIn && (
+          <p className="login-note green" role="status">
+            <span className="dot" />
+            Welcome back, {signedIn}.
+          </p>
+        )}
+      </form>
+    </div>
+  )
+}
+
 function App() {
   return (
     <div className="app-shell">
@@ -134,6 +218,14 @@ function App() {
               ))}
             </div>
           </aside>
+        </section>
+
+        <section className="section" id="login">
+          <div className="section-head">
+            <h2>Sign in</h2>
+            <a href="#login">Forgot password?</a>
+          </div>
+          <LoginCard />
         </section>
 
         <section className="stats">
