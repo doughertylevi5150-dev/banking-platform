@@ -3,7 +3,12 @@
  * works against the local Express server (/api/foundryApi) and the hosted
  * functions build (…/functions/foundryApi).
  */
-const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
+// On a static host there is no /api to proxy to, so calls go to the hosted
+// functions build unless a build-time override is supplied.
+const HOSTED_API = 'https://base44.app/api/apps/6ae17320e2bf99b777448a91/functions'
+const ON_LOCAL_HOST =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
+const API_URL = (import.meta.env.VITE_API_URL || (ON_LOCAL_HOST ? '/api' : HOSTED_API)).replace(/\/$/, '')
 
 async function call(action, { body = {}, token, desk = false } = {}) {
   let response
