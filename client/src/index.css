@@ -1242,3 +1242,97 @@ a {
 .swarm-bot {
   scroll-margin-top: 96px;
 }
+
+/* Account ledger */
+.accounts-panel {
+  gap: 12px;
+}
+
+.account-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(14, 25, 40, 0.6);
+}
+
+.account-row.is-connected {
+  border-color: rgba(74, 213, 155, 0.45);
+}
+
+.account-row.is-needed {
+  border-color: rgba(246, 201, 141, 0.4);
+}
+
+.status-dot.idle {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.account-main {
+  flex: 1;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.account-name {
+  font-size: 0.92rem;
+}
+
+.account-need {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.account-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.account-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  text-decoration: none;
+  color: var(--text);
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.account-link:hover {
+  border-color: rgba(90, 169, 255, 0.6);
+  color: var(--blue);
+}
+
+.account-connect {
+  padding: 7px 14px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .account-row {
+    flex-wrap: wrap;
+  }
+
+  .account-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .account-need {
+    font-size: 0.76rem;
+  }
+}

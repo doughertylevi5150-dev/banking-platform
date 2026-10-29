@@ -11,6 +11,21 @@ import { authenticate } from '../auth.js'
 
 const PENDING_CAP = 6
 
+// What each seeded bot needs before it can touch real money.
+const ACCOUNT_PLAN = {
+  think: ['none', 'none', 'Nothing. Runs on the console alone.'],
+  maker: ['none', 'none', 'Nothing. Builds from approved charters.'],
+  nft: ['needed', 'OpenSea', 'An OpenSea API key, or your marketplace wallet signature.'],
+  buy: ['needed', 'Kraken', 'Trade-only API key with a hard cap.'],
+  sell: ['needed', 'Kraken', 'Trade-only API key. Withdrawals stay off.'],
+  scraper: ['none', 'public market data', 'Nothing. Reads public prices, no key needed.'],
+  maintenance: ['none', 'none', 'Nothing. Watches the swarm itself.'],
+  treasury: ['needed', 'Mercury', 'A treasury account with read plus transfer limits.'],
+  fraud: ['needed', 'Stripe Radar', 'A payments account to score authorizations against.'],
+  payroll: ['needed', 'Gusto', 'Payroll API access and a funding account.'],
+  spend: ['needed', 'Plaid', 'A Plaid client id and secret, or a bank export to read.'],
+}
+
 export const SEED_BOTS = [
   {
     key: 'think',
@@ -321,6 +336,11 @@ export function mountFoundryRoutes(app, store, foundryFile) {
         source: 'seed',
         est_monthly: estimate(seed.est),
         last_action: 'Charter written, first cycle complete.',
+        account_status: ACCOUNT_PLAN[seed.key]?.[0] || 'needed',
+        account_provider: ACCOUNT_PLAN[seed.key]?.[1] || '',
+        account_needs: ACCOUNT_PLAN[seed.key]?.[2] || '',
+        last_run: '',
+        last_result: '',
         created_at: new Date().toISOString(),
       })
     }
@@ -379,6 +399,11 @@ export function mountFoundryRoutes(app, store, foundryFile) {
           status: bot.status,
           estMonthly: bot.est_monthly,
           lastAction: bot.last_action,
+          accountStatus: bot.account_status || 'none',
+          accountProvider: bot.account_provider || '',
+          accountNeeds: bot.account_needs || '',
+          lastRun: bot.last_run || '',
+          lastResult: bot.last_result || '',
           createdAt: bot.created_at,
         })),
       proposals: proposals.map((item) => ({
@@ -403,6 +428,8 @@ export function mountFoundryRoutes(app, store, foundryFile) {
         paused: state.bots.filter((bot) => bot.status === 'paused').length,
         pending: proposals.length,
         decided: state.proposals.filter((item) => item.status !== 'pending').length,
+        connected: state.bots.filter((bot) => bot.account_status === 'connected').length,
+        awaitingAccount: state.bots.filter((bot) => bot.account_status === 'needed').length,
         projected: running.reduce((sum, bot) => sum + (bot.est_monthly || 0), 0),
       },
     }
@@ -460,6 +487,11 @@ export function mountFoundryRoutes(app, store, foundryFile) {
           risk_level: proposal.risk_level,
           status: 'running',
           source: 'approved',
+          account_status: 'needed',
+          account_provider: '',
+          account_needs: 'An account to earn against. Tell the foundry which provider once you have one.',
+          last_run: '',
+          last_result: '',
           est_monthly: proposal.est_monthly,
           last_action: 'Approved from the console, first cycle started.',
           created_at: new Date().toISOString(),
@@ -504,8 +536,74 @@ export function mountFoundryRoutes(app, store, foundryFile) {
     return res.status(400).json({ error: 'Unknown action.' })
   }
 
+  async function desk(req, res) {
+    if (!ownerOnly(req, res)) return undefined
+
+    const action = String(req.body?.action || 'state')
+    const state = read()
+
+    if (action === 'feed') {
+      let prices
+      try {
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true',
+          { headers: { accept: 'application/json' } },
+        )
+        if (!response.ok) throw new Error(`feed responded ${response.status}`)
+        prices = await response.json()
+      } catch {
+        return res.status(502).json({ error: 'The public price feed did not answer. Try again shortly.' })
+      }
+
+      const labels = { bitcoin: 'BTC', ethereum: 'ETH', solana: 'SOL' }
+      const line = Object.keys(labels)
+        .filter((id) => prices[id])
+        .map((id) => `${labels[id]} $${Number(prices[id].usd).toLocaleString('en-US')}`)
+        .join(' · ')
+      const when = new Date().toISOString()
+      const scraper = state.bots.find((bot) => bot.slug === 'scraper')
+
+      if (scraper) {
+        scraper.last_run = when
+        scraper.last_result = line
+      }
+      logEvent(state, 'feed', `Scraper Bot read the live market: ${line}.`, 'scraper')
+      write(state)
+      return res.json({ line, prices, at: when })
+    }
+
+    if (action === 'setAccount') {
+      const bot = state.bots.find((item) => item.id === req.body?.botId)
+      if (!bot) return res.status(404).json({ error: 'That bot is not in the swarm.' })
+
+      const status = String(req.body?.status || '')
+      if (!['none', 'needed', 'connected'].includes(status)) {
+        return res.status(400).json({ error: 'Use none, needed or connected.' })
+      }
+
+      bot.account_status = status
+      bot.last_action =
+        status === 'connected'
+          ? `Account confirmed on ${bot.account_provider || 'a live provider'}. Ready for its first live cycle.`
+          : `Waiting on an account${bot.account_provider ? ` with ${bot.account_provider}` : ''}.`
+      logEvent(
+        state,
+        'account',
+        status === 'connected' ? `${bot.name} has a live account on ${bot.account_provider}.` : `${bot.name} is waiting on its account.`,
+        bot.slug,
+      )
+      write(state)
+      return res.json({ ok: true, status })
+    }
+
+    ensureSeeded(state)
+    write(state)
+    return res.json(snapshot(state))
+  }
+
   const router = Router()
   router.post('/foundry', handle)
   app.use('/api', router)
   app.post('/api/foundryApi', handle)
+  app.post('/api/foundryOps', desk)
 }

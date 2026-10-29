@@ -5,11 +5,11 @@
  */
 const API_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 
-async function call(action, { body = {}, token } = {}) {
+async function call(action, { body = {}, token, desk = false } = {}) {
   let response
 
   try {
-    response = await fetch(`${API_URL}/foundryApi`, {
+    response = await fetch(`${API_URL}/${desk ? 'foundryOps' : 'foundryApi'}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +30,13 @@ async function call(action, { body = {}, token } = {}) {
   return payload
 }
 
-export const fetchFoundry = (token) => call('state', { token })
+// State, accounts and the live market read come from the accounts desk.
+export const fetchFoundry = (token) => call('state', { token, desk: true })
+
+export const runFeed = (token) => call('feed', { token, desk: true })
+
+export const setBotAccount = (token, botId, status, provider) =>
+  call('setAccount', { token, desk: true, body: { botId, status, provider } })
 
 export const decideProposal = (token, proposalId, decision) =>
   call('decide', { token, body: { proposalId, decision } })

@@ -1,5 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { decideProposal, draftProposals, fetchFoundry, retireBot, toggleBot } from '../api/foundryApi'
+import {
+  decideProposal,
+  draftProposals,
+  fetchFoundry,
+  retireBot,
+  runFeed,
+  setBotAccount,
+  toggleBot,
+} from '../api/foundryApi'
+
+// Where the owner actually gets each provider's key. Opening a link is not a connection.
+const PROVIDER_LINKS = {
+  Kraken: 'https://pro.kraken.com/app/settings/api',
+  OpenSea: 'https://opensea.io/settings/developer',
+  Mercury: 'https://app.mercury.com/settings/api',
+  'Stripe Radar': 'https://dashboard.stripe.com/apikeys',
+  Gusto: 'https://dev.gusto.com',
+  Plaid: 'https://dashboard.plaid.com/team/keys',
+}
 
 const RISK_CLASS = { Low: 'risk-low', Medium: 'risk-mid', High: 'risk-high' }
 const AUTO_DRAFT_MS = 60_000
@@ -22,6 +40,8 @@ function Foundry({ token }) {
   const [openBot, setOpenBot] = useState(null)
   const [note, setNote] = useState('')
   const [elapsed, setElapsed] = useState(0)
+  const [feed, setFeed] = useState(null)
+  const [feedBusy, setFeedBusy] = useState(false)
   const mountedAt = useRef(Date.now())
 
   const load = useCallback(
@@ -103,6 +123,37 @@ function Foundry({ token }) {
     }
   }
 
+  async function handleFeed() {
+    setFeedBusy(true)
+    try {
+      const result = await runFeed(token)
+      setFeed({ line: result.line, at: result.at })
+      await load({ quiet: true })
+      setNote('Scraper Bot read the live market.')
+    } catch (problem) {
+      setError(problem.message)
+    } finally {
+      setFeedBusy(false)
+    }
+  }
+
+  async function handleAccount(bot, status) {
+    setBusy(bot.id)
+    try {
+      await setBotAccount(token, bot.id, status, bot.accountProvider)
+      await load({ quiet: true })
+      setNote(
+        status === 'connected'
+          ? `${bot.name} marked live on ${bot.accountProvider || 'your own account'}.`
+          : `${bot.name} is back on the waiting list.`,
+      )
+    } catch (problem) {
+      setError(problem.message)
+    } finally {
+      setBusy('')
+    }
+  }
+
   async function handleToggle(bot) {
     setBusy(bot.id)
     try {
@@ -168,6 +219,11 @@ function Foundry({ token }) {
           <span className="mini-label">Waiting on you</span>
           <strong>{totals ? totals.pending : '—'}</strong>
           <span className="foundry-delta">{totals ? `${totals.decided} decided so far` : 'loading'}</span>
+        </div>
+        <div className="foundry-stat">
+          <span className="mini-label">Accounts live</span>
+          <strong>{totals ? `${totals.connected}/${(data?.bots || []).length}` : '—'}</strong>
+          <span className="foundry-delta">{totals ? `${totals.awaitingAccount} still need one` : 'loading'}</span>
         </div>
         <div className="foundry-stat">
           <span className="mini-label">Projected each month</span>
@@ -295,6 +351,58 @@ function Foundry({ token }) {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="foundry-log accounts-panel">
+        <div className="foundry-panel-head">
+          <h3>Accounts</h3>
+          <button type="button" className="ghost-btn foundry-draft" onClick={handleFeed} disabled={feedBusy}>
+            {feedBusy ? 'Reading…' : 'Run a live read'}
+          </button>
+        </div>
+
+        <p className="foundry-empty">
+          {feed
+            ? `Scraper Bot at ${new Date(feed.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${feed.line}`
+            : 'Scraper Bot needs no account. Run a live read to pull real prices now.'}
+        </p>
+
+        <ul className="account-list">
+          {(data?.bots || []).map((bot) => {
+            const link = PROVIDER_LINKS[bot.accountProvider]
+            return (
+              <li key={bot.id} className={`account-row is-${bot.accountStatus}`}>
+                <span className={`status-dot ${bot.accountStatus === 'connected' ? 'on' : bot.accountStatus === 'needed' ? 'off' : 'idle'}`} aria-hidden="true" />
+                <div className="account-main">
+                  <span className="account-name">{bot.name}</span>
+                  <span className="account-need">
+                    {bot.accountStatus === 'connected'
+                      ? `Live on ${bot.accountProvider || 'your own account'}`
+                      : bot.accountStatus === 'needed'
+                        ? `Needs ${bot.accountProvider || 'an account'}: ${bot.accountNeeds}`
+                        : bot.accountNeeds || 'No account needed.'}
+                  </span>
+                </div>
+                <div className="account-actions">
+                  {bot.accountStatus !== 'connected' && link && (
+                    <a className="ghost-btn account-link" href={link} target="_blank" rel="noreferrer">
+                      Get key
+                    </a>
+                  )}
+                  {bot.accountStatus === 'connected' ? (
+                    <button type="button" className="ghost-btn" onClick={() => handleAccount(bot, 'needed')} disabled={busy === bot.id}>
+                      Revoke
+                    </button>
+                  ) : (
+                    <button type="button" className="secondary-btn account-connect" onClick={() => handleAccount(bot, 'connected')} disabled={busy === bot.id}>
+                      Mark live
+                    </button>
+                  )}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
       </div>
 
       <div className="foundry-log">
