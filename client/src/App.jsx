@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
+import { changePassword, claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
 import { clearToken, loadToken, saveToken } from './auth/session'
 import ActivityPage from './components/ActivityPage'
 import BotPage from './components/BotPage'
@@ -26,7 +26,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v13'
+const BUILD = 'v14'
 
 function readRoute() {
   const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')
@@ -50,6 +50,11 @@ function App() {
   const [authError, setAuthError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [note, setNote] = useState('')
+  const [passwordOpen, setPasswordOpen] = useState(false)
+  const [pwBusy, setPwBusy] = useState(false)
+  const [pwError, setPwError] = useState('')
+  const [pwDone, setPwDone] = useState('')
+  const [pwValues, setPwValues] = useState({ current: '', next: '' })
   const [route, setRoute] = useState(readRoute)
 
   useEffect(() => {
@@ -159,6 +164,30 @@ function App() {
     setNote(id === 'swarm' ? 'Jumped to the swarm.' : 'Jumped to the foundry.')
   }, [])
 
+  async function handleChangePassword(event) {
+    event.preventDefault()
+    setPwBusy(true)
+    setPwError('')
+    setPwDone('')
+
+    try {
+      await changePassword(token, pwValues.current, pwValues.next)
+      setPwDone('Password updated. Use it the next time you sign in.')
+      setPwValues({ current: '', next: '' })
+    } catch (error) {
+      setPwError(error.message)
+    } finally {
+      setPwBusy(false)
+    }
+  }
+
+  function closePasswordPanel() {
+    setPasswordOpen(false)
+    setPwError('')
+    setPwDone('')
+    setPwValues({ current: '', next: '' })
+  }
+
   async function handleSignOut() {
     const current = token
     clearToken()
@@ -224,6 +253,7 @@ function App() {
           <span className="session-chip" title={`Signed in as ${owner.email}`}>
             {owner.name || owner.email}
           </span>
+          <LoginButton label="Password" onClick={() => setPasswordOpen(true)} ariaLabel="Change your password" />
           <LoginButton label="Log out" onClick={handleSignOut} />
           <PushButton onClick={() => jumpToSection('foundry')}>Control hub</PushButton>
         </div>
@@ -283,6 +313,68 @@ function App() {
         {route.name === 'treasury' && <TreasuryPage token={token} onJump={jumpTo} />}
         {route.name === 'bot' && <BotPage token={token} slug={route.slug} onJump={jumpTo} />}
       </main>
+
+      {passwordOpen && (
+        <div className="pw-overlay" role="dialog" aria-modal="true" aria-label="Change password">
+          <div className="auth-shell">
+            <div className="login-card auth-card">
+              <div className="auth-head">
+                <h1>Change password</h1>
+                <p>Signed in as {owner.email}. Pick a password only you know.</p>
+              </div>
+
+              {pwError && (
+                <p className="auth-error" role="alert">
+                  <span className="dot" />
+                  {pwError}
+                </p>
+              )}
+
+              {pwDone ? (
+                <p className="pw-note" role="status">
+                  {pwDone}
+                </p>
+              ) : null}
+
+              <form className="auth-form" onSubmit={handleChangePassword} noValidate>
+                <div className="login-field">
+                  <label htmlFor="pw-current">Current password</label>
+                  <input
+                    id="pw-current"
+                    className="login-input"
+                    type="password"
+                    autoComplete="current-password"
+                    value={pwValues.current}
+                    onChange={(event) => setPwValues((v) => ({ ...v, current: event.target.value }))}
+                  />
+                </div>
+
+                <div className="login-field">
+                  <label htmlFor="pw-next">New password</label>
+                  <input
+                    id="pw-next"
+                    className="login-input"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="At least 8 characters"
+                    value={pwValues.next}
+                    onChange={(event) => setPwValues((v) => ({ ...v, next: event.target.value }))}
+                  />
+                </div>
+
+                <div className="pw-actions">
+                  <button className="primary-btn auth-submit" type="submit" disabled={pwBusy}>
+                    {pwBusy ? 'Saving…' : 'Save password'}
+                  </button>
+                  <button className="secondary-btn" type="button" onClick={closePasswordPanel}>
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {note && (
         <p className="console-note" role="status">

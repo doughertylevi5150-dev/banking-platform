@@ -26,20 +26,25 @@ export class ApiError extends Error {
   }
 }
 
-async function call(action, { body = {}, token } = {}) {
+async function call(action, { body = {}, token, path = '/bankingAuth' } = {}) {
   let response
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 20000)
 
   try {
-    response = await fetch(url('/bankingAuth'), {
+    response = await fetch(url(path), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ action, ...body }),
+      signal: controller.signal,
     })
   } catch {
-    throw new ApiError("Can't reach the sign-in service. Check your connection.")
+    throw new ApiError('Can\'t reach the sign-in service. Check your connection.')
+  } finally {
+    clearTimeout(timer)
   }
 
   if (response.status === 204) return null
@@ -74,4 +79,12 @@ export function fetchOwner(token) {
 
 export function signOut(token) {
   return call('logout', { token })
+}
+
+export function changePassword(token, currentPassword, newPassword) {
+  return call('changePassword', {
+    token,
+    path: '/bankingPassword',
+    body: { currentPassword, newPassword },
+  })
 }
