@@ -90,6 +90,17 @@ function App() {
   const [busy, setBusy] = useState(false)
   const [authError, setAuthError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
+  const [botList, setBotList] = useState(bots)
+  const [openBot, setOpenBot] = useState(null)
+  const [feed, setFeed] = useState(activity)
+  const [openActivity, setOpenActivity] = useState(null)
+  const [note, setNote] = useState('')
+
+  useEffect(() => {
+    if (!note) return undefined
+    const timer = setTimeout(() => setNote(''), 3200)
+    return () => clearTimeout(timer)
+  }, [note])
 
   useEffect(() => {
     let cancelled = false
@@ -158,6 +169,68 @@ function App() {
     }
   }
 
+  function jumpTo(id) {
+    if (typeof document === 'undefined') return
+    const target = document.getElementById(id)
+    if (!target) return
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setNote(id === 'bots' ? 'Jumped to your bots.' : 'Jumped to the overview.')
+  }
+
+  function toggleBot(id) {
+    setOpenBot((current) => (current === id ? null : id))
+  }
+
+  function setBotRunning(id, running) {
+    const bot = botList.find((item) => item.id === id)
+    if (!bot) return
+
+    setBotList((current) =>
+      current.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              status: running ? 'Running' : 'Paused',
+              detail: running ? 'Resumed just now' : 'Paused just now',
+            }
+          : item,
+      ),
+    )
+
+    setFeed((current) =>
+      [
+        {
+          dot: running ? 'green' : 'amber',
+          title: `${bot.title} ${running ? 'resumed' : 'paused'}`,
+          detail: running
+            ? 'Picked its schedule back up from the console.'
+            : 'Stopped on request from the console. Balances are untouched.',
+        },
+        ...current,
+      ].slice(0, 6),
+    )
+
+    setNote(`${bot.title} ${running ? 'resumed' : 'paused'}.`)
+  }
+
+  function runBot(id) {
+    const bot = botList.find((item) => item.id === id)
+    if (!bot) return
+
+    setFeed((current) =>
+      [
+        {
+          dot: 'blue',
+          title: `${bot.title} accepted a manual run`,
+          detail: 'Queued from the console and picked up within a second.',
+        },
+        ...current,
+      ].slice(0, 6),
+    )
+
+    setNote(`${bot.title} is working on it now.`)
+  }
+
   async function handleSignOut() {
     const current = token
     clearToken()
@@ -207,7 +280,7 @@ function App() {
             {owner.name || owner.email}
           </span>
           <LoginButton label="Log out" onClick={handleSignOut} />
-          <PushButton>Control hub</PushButton>
+          <PushButton onClick={() => jumpTo('bots')}>Control hub</PushButton>
         </div>
       </header>
 
@@ -222,10 +295,10 @@ function App() {
               open the app.
             </p>
             <div className="hero-actions">
-              <button type="button" className="primary-btn">
+              <button type="button" className="primary-btn" onClick={() => jumpTo('overview')}>
                 Open dashboard
               </button>
-              <button type="button" className="secondary-btn">
+              <button type="button" className="secondary-btn" onClick={() => jumpTo('bots')}>
                 Meet the bots
               </button>
             </div>
@@ -252,7 +325,7 @@ function App() {
           </aside>
         </section>
 
-        <section className="stats">
+        <section className="stats" id="overview">
           {stats.map((stat) => (
             <div className="stat-card" key={stat.label}>
               <div className="stat-value">{stat.value}</div>
@@ -267,20 +340,77 @@ function App() {
             <a href="#bots">View all</a>
           </div>
           <div className="bot-grid" id="bots">
-            {bots.map((bot) => (
-              <article className="bot-card" key={bot.id}>
-                <span className={`bot-badge ${bot.badgeClass}`}>{bot.badge}</span>
-                <h3>{bot.title}</h3>
-                <p>{bot.description}</p>
-                <div className="bot-meta">
-                  <span>{bot.status}</span>
-                  <span>{bot.detail}</span>
-                </div>
-                <button type="button" className="ghost-btn">
-                  Open bot
-                </button>
-              </article>
-            ))}
+            {botList.map((bot) => {
+              const isOpen = openBot === bot.id
+              const isRunning = bot.status === 'Running'
+
+              return (
+                <article
+                  className={`bot-card${isOpen ? ' is-open' : ''}`}
+                  key={bot.id}
+                  onClick={() => toggleBot(bot.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      toggleBot(bot.id)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                >
+                  <span className={`bot-badge ${bot.badgeClass}`}>{bot.badge}</span>
+                  <h3>{bot.title}</h3>
+                  <p>{bot.description}</p>
+                  <div className="bot-meta">
+                    <span className={isRunning ? 'state-running' : 'state-paused'}>{bot.status}</span>
+                    <span>{bot.detail}</span>
+                  </div>
+
+                  {isOpen && (
+                    <div className="bot-detail">
+                      <p>
+                        Runs on a {bot.id === 'treasury' ? 'hourly' : 'steady'} schedule and keeps a full
+                        trail of what it touched.
+                      </p>
+                      <div className="bot-actions">
+                        <button
+                          type="button"
+                          className="secondary-btn"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            setBotRunning(bot.id, !isRunning)
+                          }}
+                        >
+                          {isRunning ? 'Pause bot' : 'Resume bot'}
+                        </button>
+                        <button
+                          type="button"
+                          className="ghost-btn"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            runBot(bot.id)
+                          }}
+                        >
+                          Run now
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="ghost-btn bot-open"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      toggleBot(bot.id)
+                    }}
+                  >
+                    {isOpen ? 'Close bot' : 'Open bot'}
+                  </button>
+                </article>
+              )
+            })}
           </div>
         </section>
 
@@ -290,18 +420,47 @@ function App() {
             <a href="#activity">Full log</a>
           </div>
           <div className="activity-list" id="activity">
-            {activity.map((item) => (
-              <div className="activity-item" key={item.title}>
-                <span className={`dot ${item.dot}`} />
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.detail}</p>
+            {feed.map((item) => {
+              const isOpen = openActivity === item.title
+
+              return (
+                <div
+                  className={`activity-item${isOpen ? ' is-open' : ''}`}
+                  key={item.title}
+                  onClick={() => setOpenActivity(isOpen ? null : item.title)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      setOpenActivity(isOpen ? null : item.title)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                >
+                  <span className={`dot ${item.dot}`} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.detail}</p>
+                    {isOpen && (
+                      <p className="activity-extra">
+                        Logged {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ·
+                        Nothing leaves this console without your say-so.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </section>
       </main>
+
+      {note && (
+        <p className="console-note" role="status">
+          {note}
+        </p>
+      )}
     </div>
   )
 }

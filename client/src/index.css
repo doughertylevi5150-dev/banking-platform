@@ -748,3 +748,106 @@ a {
     font-size: 0.8rem;
   }
 }
+
+/* Dashboard interactions */
+.bot-card {
+  cursor: pointer;
+  text-align: left;
+}
+
+.bot-card:hover {
+  border-color: rgba(90, 169, 255, 0.4);
+}
+
+.bot-card:focus-visible,
+.activity-item:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.bot-card.is-open {
+  border-color: rgba(90, 169, 255, 0.6);
+}
+
+.bot-open {
+  margin-top: 14px;
+  width: 100%;
+}
+
+.bot-detail {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.bot-detail p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.bot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bot-actions button {
+  flex: 1 1 130px;
+}
+
+.state-running {
+  color: #8ef2c4;
+}
+
+.state-paused {
+  color: #f6c98d;
+}
+
+.activity-item {
+  cursor: pointer;
+}
+
+.activity-item:hover {
+  border-color: rgba(90, 169, 255, 0.3);
+}
+
+.activity-item.is-open {
+  border-color: rgba(90, 169, 255, 0.5);
+}
+
+.activity-extra {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.console-note {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  background: rgba(13, 24, 38, 0.96);
+  color: var(--text);
+  font-size: 0.88rem;
+  box-shadow: 0 18px 40px rgba(4, 9, 18, 0.55);
+  z-index: 20;
+  max-width: calc(100% - 32px);
+  pointer-events: none;
+}
+
+@media (max-width: 520px) {
+  .console-note {
+    bottom: 16px;
+    font-size: 0.84rem;
+  }
+}
