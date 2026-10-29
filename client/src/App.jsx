@@ -26,7 +26,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v14'
+const BUILD = 'v15'
 
 function readRoute() {
   const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')

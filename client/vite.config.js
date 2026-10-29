@@ -7,6 +7,10 @@ export default defineConfig({
   // hosts stay at the root.
   base: process.env.GITHUB_PAGES ? '/banking-platform/' : '/',
   plugins: [react()],
+  // Published builds carry an id so a cached old copy can notice a newer one.
+  define: {
+    __BUILD_ID__: JSON.stringify(process.env.BUILD_ID || 'dev'),
+  },
   server: {
     proxy: {
       // Local dev talks to the Express auth server; production uses VITE_API_URL.
