@@ -721,3 +721,30 @@ a {
 .push-btn.auth-submit {
   width: 100%;
 }
+
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(245, 180, 76, 0.4);
+  border-radius: 10px;
+  background: rgba(245, 180, 76, 0.12);
+  color: var(--amber);
+  font-size: 0.85rem;
+}
+
+.auth-loading {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 480px) {
+  .auth-error {
+    align-items: flex-start;
+    font-size: 0.8rem;
+  }
+}

@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:pages": "GITHUB_PAGES=1 vite build"
+    "build:pages": "GITHUB_PAGES=1 vite build && python3 -c \"import shutil,os; shutil.rmtree('../docs', ignore_errors=True); shutil.copytree('dist', '../docs'); open('../docs/.nojekyll','w').close()\""
   },
   "dependencies": {
     "axios": "^1.21.0",

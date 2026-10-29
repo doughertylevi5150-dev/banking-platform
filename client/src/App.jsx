@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { clearSession, loadSession, saveSession } from './auth/session'
+import { useEffect, useRef, useState } from 'react'
+import { claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
+import { clearToken, loadToken, saveToken } from './auth/session'
 import LoginButton from './components/LoginButton'
 import LoginPage from './components/LoginPage'
 import PushButton from './components/PushButton'
@@ -81,19 +82,114 @@ const activity = [
 const signalBars = [42, 68, 55, 84, 62, 96, 74, 58, 88, 66, 92, 78]
 
 function App() {
-  const [session, setSession] = useState(() => loadSession())
+  const initialToken = useRef(loadToken())
+  const [token, setToken] = useState(initialToken.current)
+  const [owner, setOwner] = useState(null)
+  const [checking, setChecking] = useState(true)
+  const [setupRequired, setSetupRequired] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [authError, setAuthError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
-  function handleSignIn(email, { remember = true } = {}) {
-    setSession(saveSession(email, remember))
+  useEffect(() => {
+    let cancelled = false
+
+    async function restore() {
+      try {
+        const status = await getStatus()
+        if (!cancelled) setSetupRequired(Boolean(status.setupRequired))
+      } catch {
+        // Offline or the API is not configured; the form reports it on submit.
+      }
+
+      if (initialToken.current) {
+        try {
+          const { user } = await fetchOwner(initialToken.current)
+          if (!cancelled) setOwner(user)
+        } catch {
+          clearToken()
+          if (!cancelled) setToken(null)
+        }
+      }
+
+      if (!cancelled) setChecking(false)
+    }
+
+    restore()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function handleSignIn(email, password, remember) {
+    setBusy(true)
+    setAuthError('')
+    setFieldErrors({})
+
+    try {
+      const result = await signIn(email, password)
+      saveToken(result.token, remember)
+      setToken(result.token)
+      setOwner(result.user)
+    } catch (error) {
+      setAuthError(error.message)
+      setFieldErrors(error.fields || {})
+    } finally {
+      setBusy(false)
+    }
   }
 
-  function handleSignOut() {
-    clearSession()
-    setSession(null)
+  async function handleClaimOwner(values) {
+    setBusy(true)
+    setAuthError('')
+    setFieldErrors({})
+
+    try {
+      const result = await claimOwner(values)
+      saveToken(result.token, true)
+      setToken(result.token)
+      setOwner(result.user)
+      setSetupRequired(false)
+    } catch (error) {
+      setAuthError(error.message)
+      setFieldErrors(error.fields || {})
+    } finally {
+      setBusy(false)
+    }
   }
 
-  if (!session) {
-    return <LoginPage onSignIn={handleSignIn} />
+  async function handleSignOut() {
+    const current = token
+    clearToken()
+    setToken(null)
+    setOwner(null)
+
+    try {
+      if (current) await signOut(current)
+    } catch {
+      // The local token is already gone; a failed revoke should not trap the owner.
+    }
+  }
+
+  if (checking) {
+    return (
+      <div className="auth-shell">
+        <p className="auth-loading">Opening the console…</p>
+      </div>
+    )
+  }
+
+  if (!owner) {
+    return (
+      <LoginPage
+        onSignIn={handleSignIn}
+        onClaimOwner={handleClaimOwner}
+        setupRequired={setupRequired}
+        busy={busy}
+        error={authError}
+        fieldErrors={fieldErrors}
+      />
+    )
   }
 
   return (
@@ -107,8 +203,8 @@ function App() {
           </div>
         </div>
         <div className="hero-actions">
-          <span className="session-chip" title={`Signed in since ${new Date(session.signedInAt).toLocaleString()}`}>
-            {session.email}
+          <span className="session-chip" title={`Signed in as ${owner.email}`}>
+            {owner.name || owner.email}
           </span>
           <LoginButton label="Log out" onClick={handleSignOut} />
           <PushButton>Control hub</PushButton>

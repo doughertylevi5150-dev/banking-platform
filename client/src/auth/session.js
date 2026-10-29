@@ -1,31 +1,18 @@
-const SESSION_KEY = 'levisbotuniverse.session'
+const TOKEN_KEY = 'levisbotuniverse.token'
 
-function readFrom(store) {
-  try {
-    const raw = store.getItem(SESSION_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    if (!parsed || typeof parsed.email !== 'string' || !parsed.email) return null
-    return parsed
-  } catch {
-    return null
-  }
+/** Stores the API session token; "keep me signed in" chooses localStorage over sessionStorage. */
+export function saveToken(token, remember = true) {
+  clearToken()
+  const store = remember ? window.localStorage : window.sessionStorage
+  store.setItem(TOKEN_KEY, token)
+  return token
 }
 
-export function loadSession() {
-  return readFrom(window.sessionStorage) || readFrom(window.localStorage)
+export function loadToken() {
+  return window.sessionStorage.getItem(TOKEN_KEY) || window.localStorage.getItem(TOKEN_KEY)
 }
 
-export function saveSession(email, remember = true) {
-  const session = { email, signedInAt: new Date().toISOString() }
-  const target = remember ? window.localStorage : window.sessionStorage
-  const other = remember ? window.sessionStorage : window.localStorage
-  other.removeItem(SESSION_KEY)
-  target.setItem(SESSION_KEY, JSON.stringify(session))
-  return session
-}
-
-export function clearSession() {
-  window.localStorage.removeItem(SESSION_KEY)
-  window.sessionStorage.removeItem(SESSION_KEY)
+export function clearToken() {
+  window.localStorage.removeItem(TOKEN_KEY)
+  window.sessionStorage.removeItem(TOKEN_KEY)
 }

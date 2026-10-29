@@ -1,7 +1,7 @@
 {
   "name": "banking-platform",
   "version": "1.0.0",
-  "description": "Modern banking platform with customer dashboard and transaction management",
+  "description": "Banking operations console with owner-only authentication (Express, JWT, bcrypt)",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -22,20 +22,16 @@
   "author": "doughertylevi5150-dev",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.1.0",
-    "mongoose": "^7.5.0",
-    "express-validator": "^7.0.0",
-    "helmet": "^7.0.0"
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^8.2.1",
-    "jest": "^29.7.0",
-    "eslint": "^8.49.0",
-    "prettier": "^3.0.3"
-  }
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module"
 }
