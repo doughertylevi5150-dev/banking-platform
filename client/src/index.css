@@ -1821,3 +1821,50 @@ a {
     order: 4;
   }
 }
+
+/* Fund Bot strip on the console */
+.fund-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(74, 213, 155, 0.32);
+  background: linear-gradient(135deg, rgba(18, 40, 38, 0.85), rgba(12, 24, 38, 0.85));
+}
+
+.fund-strip-main {
+  display: grid;
+  gap: 6px;
+  max-width: 68ch;
+}
+
+.fund-strip-main h3 {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+}
+
+.fund-strip-main p {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.fund-strip-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .fund-strip-actions {
+    width: 100%;
+  }
+
+  .fund-strip-actions button {
+    flex: 1;
+  }
+}

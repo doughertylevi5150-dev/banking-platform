@@ -26,7 +26,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v12'
+const BUILD = 'v13'
 
 function readRoute() {
   const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')
@@ -35,7 +35,7 @@ function readRoute() {
 
   const [head, tail] = raw.split('/')
   if (head === 'activity') return { name: 'activity' }
-  if (head === 'funding') return { name: 'funding' }
+  if (head === 'funding') return { name: 'funding', route: tail || '' }
   if (head === 'treasury') return { name: 'treasury' }
   if (head === 'bot' && tail) return { name: 'bot', slug: tail }
   return { name: 'console', anchor: '' }
@@ -279,7 +279,7 @@ function App() {
         )}
 
         {route.name === 'activity' && <ActivityPage token={token} onJump={jumpTo} />}
-        {route.name === 'funding' && <FundingPage token={token} onJump={jumpTo} />}
+        {route.name === 'funding' && <FundingPage token={token} onJump={jumpTo} focusRoute={route.route} />}
         {route.name === 'treasury' && <TreasuryPage token={token} onJump={jumpTo} />}
         {route.name === 'bot' && <BotPage token={token} slug={route.slug} onJump={jumpTo} />}
       </main>

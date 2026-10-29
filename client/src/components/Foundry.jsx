@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   decideProposal,
+  fetchFunding,
   draftProposals,
   fetchFoundry,
   retireBot,
   runFeed,
   setBotAccount,
+  setFundingStatus,
   toggleBot,
 } from '../api/foundryApi'
 
@@ -40,6 +42,7 @@ function Foundry({ token, onOpenBot, onOpenPage }) {
   const [openBot, setOpenBot] = useState(null)
   const [note, setNote] = useState('')
   const [elapsed, setElapsed] = useState(0)
+  const [funding, setFunding] = useState(null)
   const [feed, setFeed] = useState(null)
   const [feedBusy, setFeedBusy] = useState(false)
   const mountedAt = useRef(Date.now())
@@ -67,6 +70,20 @@ function Foundry({ token, onOpenBot, onOpenPage }) {
     const poll = setInterval(() => load({ quiet: true }), POLL_MS)
     return () => clearInterval(poll)
   }, [load])
+
+  useEffect(() => {
+    let alive = true
+    fetchFunding(token)
+      .then((result) => {
+        if (alive) setFunding(result)
+      })
+      .catch(() => {
+        // The funding strip is a shortcut, not the console's job.
+      })
+    return () => {
+      alive = false
+    }
+  }, [token])
 
   useEffect(() => {
     const tick = setInterval(() => setElapsed(Math.floor((Date.now() - mountedAt.current) / 1000)), 1000)
@@ -116,6 +133,24 @@ function Foundry({ token, onOpenBot, onOpenPage }) {
       await decideProposal(token, proposal.id, decision)
       await load({ quiet: true })
       setNote(decision === 'approve' ? `${proposal.title} is running.` : `Passed on ${proposal.title}.`)
+    } catch (problem) {
+      setError(problem.message)
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleStartFunding() {
+    setBusy('funding')
+    try {
+      const next = (funding?.routes || [])
+        .filter((route) => ['idea', 'preparing'].includes(route.status))
+        .sort((a, b) => ['Low', 'Medium', 'High'].indexOf(a.effort) - ['Low', 'Medium', 'High'].indexOf(b.effort))[0]
+      if (next) await setFundingStatus(token, next.route, 'preparing')
+      onOpenPage?.(next ? `funding/${next.route}` : 'funding')
+      setNote(next ? `Fund Bot started the ${next.title} packet.` : 'Opening Fund Bot.')
+      const fresh = await fetchFunding(token)
+      setFunding(fresh)
     } catch (problem) {
       setError(problem.message)
     } finally {
@@ -361,6 +396,35 @@ function Foundry({ token, onOpenBot, onOpenPage }) {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="fund-strip">
+        <div className="fund-strip-main">
+          <span className="pill">Fund Bot</span>
+          <h3>
+            {funding
+              ? `${money(funding.summary.approvedAmount)} approved · ${money(funding.summary.pipeline)} filed or in pipeline`
+              : 'Money for the platform'}
+          </h3>
+          <p>
+            {funding
+              ? `${funding.summary.routes} routes ranked, ${funding.summary.ready} packet${funding.summary.ready === 1 ? '' : 's'} ready for your signature. Fund Bot never signs or files for you.`
+              : 'Ranked loans, credit, grants and revenue. You sign and file.'}
+          </p>
+        </div>
+        <div className="fund-strip-actions">
+          <button type="button" className="primary-btn" onClick={() => onOpenPage?.('funding')}>
+            Open Fund Bot
+          </button>
+          <button
+            type="button"
+            className="secondary-btn"
+            onClick={handleStartFunding}
+            disabled={busy === 'funding' || !funding?.summary.available}
+          >
+            {busy === 'funding' ? 'Starting…' : 'Start next application'}
+          </button>
         </div>
       </div>
 

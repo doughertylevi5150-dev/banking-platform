@@ -85,7 +85,7 @@ function packetFor(route, totals) {
   ].join('\n')
 }
 
-export default function FundingPage({ token, onJump }) {
+export default function FundingPage({ token, onJump, focusRoute }) {
   const [data, setData] = useState(null)
   const [totals, setTotals] = useState(null)
   const [error, setError] = useState('')
@@ -108,6 +108,15 @@ export default function FundingPage({ token, onJump }) {
   useEffect(() => {
     load()
   }, [load])
+
+  useEffect(() => {
+    if (!focusRoute) return
+    setOpenRoute(focusRoute)
+    const route = (data?.routes || []).find((item) => item.route === focusRoute)
+    if (route) setPacket({ route, text: packetFor(route, totals) })
+    // Only react when the console hands over a specific route.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRoute, data])
 
   const routes = useMemo(() => {
     const list = data?.routes || []
@@ -157,6 +166,19 @@ export default function FundingPage({ token, onJump }) {
           </p>
         </div>
         <div className="page-actions">
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={() => {
+              const route = next[0]
+              if (!route) return
+              move(route, route.status === 'idea' ? 'preparing' : 'ready')
+              copyPacket(route)
+            }}
+            disabled={!next.length}
+          >
+            Start next application
+          </button>
           <button type="button" className="ghost-btn" onClick={() => onJump('console')}>
             Console
           </button>
