@@ -1336,3 +1336,488 @@ a {
     font-size: 0.76rem;
   }
 }
+
+/* ---------------------------------------------------------------- */
+/* Pages: activity, funding, treasury, bot detail                    */
+/* ---------------------------------------------------------------- */
+
+.topnav {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  margin-right: 12px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(10, 19, 31, 0.55);
+}
+
+.topnav-link {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.topnav-link:hover {
+  color: var(--text);
+}
+
+.topnav-link.is-active {
+  color: var(--text);
+  background: rgba(77, 141, 255, 0.18);
+}
+
+.page {
+  display: grid;
+  gap: 16px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-head h2 {
+  margin: 8px 0 6px;
+  font-size: 1.5rem;
+}
+
+.page-sub {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-actions.center {
+  justify-content: center;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--blue);
+  font: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.select-input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(10, 19, 31, 0.8);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.select-input.grow {
+  flex: 1;
+  min-width: 120px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.status-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.status-chip.on {
+  color: var(--green);
+  border-color: rgba(74, 213, 155, 0.45);
+}
+
+.small-strong {
+  font-size: 1.1rem !important;
+}
+
+/* Funding routes */
+
+.route-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-row {
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(14, 25, 40, 0.55);
+  overflow: hidden;
+}
+
+.route-row.is-approved {
+  border-color: rgba(74, 213, 155, 0.45);
+}
+
+.route-row.is-ready,
+.route-row.is-filed {
+  border-color: rgba(244, 184, 75, 0.4);
+}
+
+.route-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.route-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.route-amount {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.route-status {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.tag-approved {
+  color: var(--green);
+  border-color: rgba(74, 213, 155, 0.5);
+}
+
+.tag-filed,
+.tag-ready {
+  color: var(--amber);
+  border-color: rgba(244, 184, 75, 0.45);
+}
+
+.tag-preparing {
+  color: var(--blue);
+  border-color: rgba(90, 169, 255, 0.45);
+}
+
+.route-detail {
+  display: grid;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.route-detail p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.route-updated {
+  font-size: 0.72rem !important;
+  opacity: 0.7;
+}
+
+.route-actions {
+  flex-wrap: wrap;
+}
+
+/* Application packet */
+
+.packet-panel {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(90, 169, 255, 0.35);
+  background: rgba(10, 19, 31, 0.75);
+}
+
+.packet-body {
+  margin: 0;
+  max-height: 460px;
+  overflow: auto;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(6, 13, 22, 0.9);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.packet-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* Money forms and lists */
+
+.money-form {
+  display: grid;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.money-form h4 {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+}
+
+.money-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.money-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.money-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.money-kind {
+  min-width: 60px;
+  text-transform: capitalize;
+}
+
+.money-amount {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.money-note {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detail-facts div {
+  display: grid;
+  gap: 3px;
+}
+
+.detail-facts dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.detail-facts dd {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Earnings bars */
+
+.earn-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.earn-list li {
+  display: grid;
+  grid-template-columns: minmax(110px, 1.4fr) 2fr auto auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.earn-name {
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.earn-bar {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.earn-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--green));
+}
+
+.earn-value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.earn-projection {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+/* Activity */
+
+.activity-page-log {
+  gap: 18px;
+}
+
+.activity-day {
+  display: grid;
+  gap: 8px;
+}
+
+.activity-day-label {
+  margin: 0;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.activity-text {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.bot-link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--blue);
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.bot-link:hover {
+  text-decoration: underline;
+}
+
+/* Live read results */
+
+.live-result {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(10, 19, 31, 0.65);
+}
+
+.live-result p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.live-result p.is-ok strong {
+  color: var(--green);
+}
+
+.live-result p.is-off strong {
+  color: var(--amber);
+}
+
+@media (max-width: 860px) {
+  .topnav {
+    order: 3;
+    width: 100%;
+    margin: 10px 0 0;
+    justify-content: space-between;
+  }
+
+  .earn-list li {
+    grid-template-columns: 1fr auto;
+    row-gap: 4px;
+  }
+
+  .earn-bar {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  .earn-projection {
+    grid-column: 1 / -1;
+    order: 4;
+  }
+}

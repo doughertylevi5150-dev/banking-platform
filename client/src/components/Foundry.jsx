@@ -33,7 +33,7 @@ function clock(seconds) {
   return `${mins}:${String(secs).padStart(2, '0')}`
 }
 
-function Foundry({ token }) {
+function Foundry({ token, onOpenBot, onOpenPage }) {
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState('')
@@ -232,6 +232,11 @@ function Foundry({ token }) {
           <strong>{totals ? money(totals.projected) : '—'}</strong>
           <span className="foundry-delta">sum of the running bots’ own plans</span>
         </div>
+        <div className="foundry-stat">
+          <span className="mini-label">Earned so far</span>
+          <strong>{totals ? money(totals.earned) : '—'}</strong>
+          <span className="foundry-delta">{totals ? `${totals.keysLive}/${totals.keysTotal} provider keys wired` : 'loading'}</span>
+        </div>
       </div>
 
       {error && <p className="foundry-error">{error}</p>}
@@ -309,6 +314,7 @@ function Foundry({ token }) {
                           className="swarm-row"
                           onClick={() => setOpenBot(isOpen ? null : bot.id)}
                           aria-expanded={isOpen}
+                          title={`${bot.name}: open quick actions, or use Open page for the full record`}
                         >
                           <span className={`status-dot ${bot.status === 'running' ? 'on' : 'off'}`} aria-hidden="true" />
                           <span className="swarm-name">{bot.name}</span>
@@ -342,6 +348,9 @@ function Foundry({ token }) {
                               >
                                 Retire
                               </button>
+                              <button type="button" className="ghost-btn" onClick={() => onOpenBot?.(bot.slug)}>
+                                Open page
+                              </button>
                             </div>
                           </div>
                         )}
@@ -358,9 +367,14 @@ function Foundry({ token }) {
       <div className="foundry-log accounts-panel">
         <div className="foundry-panel-head">
           <h3>Accounts</h3>
-          <button type="button" className="ghost-btn foundry-draft" onClick={handleFeed} disabled={feedBusy}>
-            {feedBusy ? 'Reading…' : 'Run a live read'}
-          </button>
+          <div className="page-actions">
+            <button type="button" className="ghost-btn" onClick={() => onOpenPage?.('treasury')}>
+              Treasury
+            </button>
+            <button type="button" className="ghost-btn foundry-draft" onClick={handleFeed} disabled={feedBusy}>
+              {feedBusy ? 'Reading…' : 'Run a live read'}
+            </button>
+          </div>
         </div>
 
         <p className="foundry-empty">
@@ -408,7 +422,12 @@ function Foundry({ token }) {
       </div>
 
       <div className="foundry-log">
-        <h3>What the swarm just did</h3>
+        <div className="foundry-panel-head">
+          <h3>What the swarm just did</h3>
+          <button type="button" className="ghost-btn" onClick={() => onOpenPage?.('activity')}>
+            See everything
+          </button>
+        </div>
         <ul>
           {(data?.events || []).slice(0, 8).map((event) => (
             <li key={event.id}>
