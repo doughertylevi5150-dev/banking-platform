@@ -193,6 +193,8 @@ function Foundry({ token }) {
 
   const totals = data?.totals
   const proposals = data?.proposals || []
+  const scraper = (data?.bots || []).find((bot) => bot.slug === 'scraper')
+  const liveRead = feed || (scraper?.lastResult ? { line: scraper.lastResult, at: scraper.lastRun } : null)
 
   return (
     <section className="section foundry" id="foundry">
@@ -362,8 +364,8 @@ function Foundry({ token }) {
         </div>
 
         <p className="foundry-empty">
-          {feed
-            ? `Scraper Bot at ${new Date(feed.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${feed.line}`
+          {liveRead
+            ? `Scraper Bot at ${new Date(liveRead.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${liveRead.line}`
             : 'Scraper Bot needs no account. Run a live read to pull real prices now.'}
         </p>
 

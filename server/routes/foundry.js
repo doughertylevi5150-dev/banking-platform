@@ -545,20 +545,23 @@ export function mountFoundryRoutes(app, store, foundryFile) {
     if (action === 'feed') {
       let prices
       try {
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true',
-          { headers: { accept: 'application/json' } },
-        )
+        const response = await fetch('https://api.kraken.com/0/public/Ticker?pair=XBTUSD,ETHUSD,SOLUSD', {
+          headers: { accept: 'application/json' },
+        })
         if (!response.ok) throw new Error(`feed responded ${response.status}`)
         prices = await response.json()
       } catch {
         return res.status(502).json({ error: 'The public price feed did not answer. Try again shortly.' })
       }
 
-      const labels = { bitcoin: 'BTC', ethereum: 'ETH', solana: 'SOL' }
-      const line = Object.keys(labels)
-        .filter((id) => prices[id])
-        .map((id) => `${labels[id]} $${Number(prices[id].usd).toLocaleString('en-US')}`)
+      const pairs = [
+        ['BTC', 'XXBTZUSD'],
+        ['ETH', 'XETHZUSD'],
+        ['SOL', 'SOLUSD'],
+      ]
+      const line = pairs
+        .filter(([, pair]) => prices?.result?.[pair]?.c?.[0])
+        .map(([label, pair]) => `${label} $${Number(prices.result[pair].c[0]).toLocaleString('en-US')}`)
         .join(' · ')
       const when = new Date().toISOString()
       const scraper = state.bots.find((bot) => bot.slug === 'scraper')

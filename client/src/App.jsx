@@ -15,7 +15,7 @@ const groundRules = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v10'
+const BUILD = 'v11'
 
 function App() {
   const initialToken = useRef(loadToken())
