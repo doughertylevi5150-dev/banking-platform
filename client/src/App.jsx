@@ -81,6 +81,9 @@ const activity = [
 
 const signalBars = [42, 68, 55, 84, 62, 96, 74, 58, 88, 66, 92, 78]
 
+// Shown in the topbar so it is obvious which build the browser is running.
+const BUILD = 'v7'
+
 function App() {
   const initialToken = useRef(loadToken())
   const [token, setToken] = useState(initialToken.current)
@@ -272,7 +275,9 @@ function App() {
           <div className="brand-mark">LU</div>
           <div>
             <div className="brand-name">LevisBotUniverse</div>
-            <div className="brand-tag">Autonomous banking operations</div>
+            <div className="brand-tag">
+              Autonomous banking operations <span className="build-tag">{BUILD}</span>
+            </div>
           </div>
         </div>
         <div className="hero-actions">
