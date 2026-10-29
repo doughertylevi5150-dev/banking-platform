@@ -3,8 +3,9 @@ import express from 'express'
 import helmet from 'helmet'
 import { config } from './config.js'
 import { mountAuthRoutes } from './routes/auth.js'
+import { mountFoundryRoutes } from './routes/foundry.js'
 
-export function createApp({ store, allowedOrigins = config.allowedOrigins } = {}) {
+export function createApp({ store, foundryFile = config.foundryFile, allowedOrigins = config.allowedOrigins } = {}) {
   const app = express()
 
   app.set('trust proxy', 1)
@@ -23,6 +24,7 @@ export function createApp({ store, allowedOrigins = config.allowedOrigins } = {}
   app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))
 
   mountAuthRoutes(app, store)
+  mountFoundryRoutes(app, store, foundryFile)
 
   app.use((_req, res) => res.status(404).json({ error: 'Not found.' }))
 

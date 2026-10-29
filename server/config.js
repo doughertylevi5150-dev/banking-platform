@@ -33,6 +33,7 @@ export const config = {
   dataDir,
   usersFile: path.join(dataDir, 'users.json'),
   sessionsFile: path.join(dataDir, 'sessions.json'),
+  foundryFile: path.join(dataDir, 'foundry.json'),
   secret: resolveSecret(),
   tokenTtlSeconds: Number(process.env.TOKEN_TTL_SECONDS || 60 * 60 * 24 * 7),
   allowedOrigins: (process.env.ALLOWED_ORIGINS || '')

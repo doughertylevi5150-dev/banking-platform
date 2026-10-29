@@ -863,3 +863,382 @@ a {
   text-transform: uppercase;
   vertical-align: 1px;
 }
+
+/* Bot foundry */
+.foundry {
+  display: grid;
+  gap: 18px;
+}
+
+.foundry-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.foundry-sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  max-width: 46ch;
+}
+
+.live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}
+
+.foundry-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.foundry-stat {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(12, 22, 36, 0.72);
+}
+
+.foundry-stat strong {
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.foundry-delta {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.foundry-error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(246, 201, 141, 0.5);
+  color: #f6c98d;
+  font-size: 0.85rem;
+}
+
+.foundry-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 880px) {
+  .foundry-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.foundry-panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(10, 19, 31, 0.6);
+}
+
+.foundry-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.foundry-panel-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.foundry-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.foundry-draft {
+  padding: 7px 14px;
+  font-size: 0.8rem;
+}
+
+.foundry-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.proposal-list {
+  display: grid;
+  gap: 12px;
+}
+
+.proposal-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(14, 25, 40, 0.85);
+}
+
+.proposal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.proposal-card h4 {
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.proposal-card > p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.risk-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.risk-low {
+  color: #8ef2c4;
+  border-color: rgba(142, 242, 196, 0.4);
+}
+
+.risk-mid {
+  color: #f6c98d;
+  border-color: rgba(246, 201, 141, 0.4);
+}
+
+.risk-high {
+  color: #ff9d9d;
+  border-color: rgba(255, 157, 157, 0.4);
+}
+
+.proposal-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+
+.proposal-facts dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.proposal-facts dd {
+  margin: 3px 0 0;
+  font-size: 0.86rem;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.proposal-actions button {
+  flex: 1 1 120px;
+}
+
+.swarm {
+  display: grid;
+  gap: 16px;
+}
+
+.swarm-group {
+  display: grid;
+  gap: 8px;
+}
+
+.swarm-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.swarm-list {
+  display: grid;
+  gap: 6px;
+}
+
+.swarm-bot {
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(14, 25, 40, 0.6);
+  overflow: hidden;
+}
+
+.swarm-bot.is-open {
+  border-color: rgba(90, 169, 255, 0.55);
+}
+
+.swarm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.swarm-row:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.status-dot.on {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(74, 213, 155, 0.7);
+}
+
+.status-dot.off {
+  background: #f6c98d;
+}
+
+.swarm-name {
+  flex: 1;
+  font-size: 0.92rem;
+}
+
+.swarm-status {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.swarm-detail {
+  display: grid;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.swarm-detail p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.swarm-fact strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.foundry-log {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(10, 19, 31, 0.6);
+}
+
+.foundry-log h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.foundry-log ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.foundry-log li {
+  display: flex;
+  gap: 10px;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.log-time {
+  flex: none;
+  color: var(--muted);
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 520px) {
+  .foundry-stat strong {
+    font-size: 1.3rem;
+  }
+
+  .proposal-actions,
+  .swarm-detail .bot-actions {
+    flex-direction: column;
+  }
+}
+
+/* Sticky topbar covers anchors unless we reserve its height. */
+#foundry,
+#swarm {
+  scroll-margin-top: 96px;
+}
+
+.swarm-bot {
+  scroll-margin-top: 96px;
+}
