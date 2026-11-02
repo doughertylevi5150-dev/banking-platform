@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { changePassword, claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
 import { clearToken, loadToken, saveToken } from './auth/session'
 import ActivityPage from './components/ActivityPage'
@@ -205,20 +206,24 @@ function App() {
     return (
       <div className="auth-shell">
         <p className="auth-loading">Opening the console…</p>
+        <Analytics />
       </div>
     )
   }
 
   if (!owner) {
     return (
-      <LoginPage
-        onSignIn={handleSignIn}
-        onClaimOwner={handleClaimOwner}
-        setupRequired={setupRequired}
-        busy={busy}
-        error={authError}
-        fieldErrors={fieldErrors}
-      />
+      <>
+        <LoginPage
+          onSignIn={handleSignIn}
+          onClaimOwner={handleClaimOwner}
+          setupRequired={setupRequired}
+          busy={busy}
+          error={authError}
+          fieldErrors={fieldErrors}
+        />
+        <Analytics />
+      </>
     )
   }
 
@@ -381,6 +386,7 @@ function App() {
           {note}
         </p>
       )}
+      <Analytics />
     </div>
   )
 }
