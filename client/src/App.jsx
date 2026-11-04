@@ -7,6 +7,7 @@ import Foundry from './components/Foundry'
 import FundingPage from './components/FundingPage'
 import LoginButton from './components/LoginButton'
 import LoginPage from './components/LoginPage'
+import OperatorPage from './components/OperatorPage'
 import PushButton from './components/PushButton'
 import TreasuryPage from './components/TreasuryPage'
 
@@ -23,10 +24,11 @@ const NAV = [
   { key: 'activity', label: 'Activity', hash: '#/activity' },
   { key: 'funding', label: 'Funding', hash: '#/funding' },
   { key: 'treasury', label: 'Treasury', hash: '#/treasury' },
+  { key: 'operator', label: 'Operator', hash: '#/operator' },
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v15'
+const BUILD = 'v16'
 
 function readRoute() {
   const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')
@@ -37,6 +39,7 @@ function readRoute() {
   if (head === 'activity') return { name: 'activity' }
   if (head === 'funding') return { name: 'funding', route: tail || '' }
   if (head === 'treasury') return { name: 'treasury' }
+  if (head === 'operator') return { name: 'operator' }
   if (head === 'bot' && tail) return { name: 'bot', slug: tail }
   return { name: 'console', anchor: '' }
 }
@@ -311,6 +314,7 @@ function App() {
         {route.name === 'activity' && <ActivityPage token={token} onJump={jumpTo} />}
         {route.name === 'funding' && <FundingPage token={token} onJump={jumpTo} focusRoute={route.route} />}
         {route.name === 'treasury' && <TreasuryPage token={token} onJump={jumpTo} />}
+        {route.name === 'operator' && <OperatorPage token={token} onJump={jumpTo} />}
         {route.name === 'bot' && <BotPage token={token} slug={route.slug} onJump={jumpTo} />}
       </main>
 
