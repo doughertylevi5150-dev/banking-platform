@@ -19,7 +19,17 @@ const API_URL = (import.meta.env.VITE_API_URL || (ON_LOCAL_HOST ? '/api' : HOSTE
 
 const INTERVAL_MS = 5 * 60 * 1000
 
+// The load tick, a focus tick and the interval can all land within the same
+// second. The server only guards five minutes between writes, so a rapid pair
+// would otherwise log the same read twice. One attempt a minute is plenty.
+const MIN_GAP_MS = 60 * 1000
+let lastAttemptAt = 0
+
 async function tick() {
+  const now = Date.now()
+  if (now - lastAttemptAt < MIN_GAP_MS) return null
+  lastAttemptAt = now
+
   try {
     const response = await fetch(`${API_URL}/foundryOps`, {
       method: 'POST',
