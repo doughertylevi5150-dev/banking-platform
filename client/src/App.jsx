@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { changePassword, claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
 import { clearToken, loadToken, saveToken } from './auth/session'
+import { startSwarmTick } from './lib/swarmTick'
 import ActivityPage from './components/ActivityPage'
 import BotPage from './components/BotPage'
 import Foundry from './components/Foundry'
@@ -59,6 +60,10 @@ function App() {
   const [pwDone, setPwDone] = useState('')
   const [pwValues, setPwValues] = useState({ current: '', next: '' })
   const [route, setRoute] = useState(readRoute)
+
+  // The swarm ticks from here while the console is open, because the platform
+  // scheduler is not running workflows for this app.
+  useEffect(() => startSwarmTick(), [])
 
   useEffect(() => {
     const onHash = () => setRoute(readRoute())
