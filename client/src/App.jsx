@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { changePassword, claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
 import { clearToken, loadToken, saveToken } from './auth/session'
-import { startSwarmTick } from './lib/swarmTick'
+import { runMaintenanceOnce, startSwarmTick } from './lib/swarmTick'
 import ActivityPage from './components/ActivityPage'
 import BotPage from './components/BotPage'
 import Foundry from './components/Foundry'
@@ -64,6 +64,11 @@ function App() {
   // The swarm ticks from here while the console is open, because the platform
   // scheduler is not running workflows for this app.
   useEffect(() => startSwarmTick(), [])
+
+  // Once the owner is signed in, the same console load runs a maintenance pass.
+  useEffect(() => {
+    if (token) runMaintenanceOnce(token)
+  }, [token])
 
   useEffect(() => {
     const onHash = () => setRoute(readRoute())

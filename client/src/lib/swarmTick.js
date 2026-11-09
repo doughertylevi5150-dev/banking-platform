@@ -55,3 +55,29 @@ export function startSwarmTick() {
     document.removeEventListener('visibilitychange', onVisible)
   }
 }
+
+/**
+ * One maintenance pass per console load, run with the owner's own session.
+ *
+ * The maintenance chief is admin-only, and an owner token is exactly that, so
+ * this gives the universe a self-audit whenever the console is opened without
+ * adding a timer that could flood the event log. Failures stay quiet: the next
+ * console load tries again.
+ */
+let maintenanceRequested = false
+
+export async function runMaintenanceOnce(token) {
+  if (typeof window === 'undefined' || !token || maintenanceRequested) return null
+  maintenanceRequested = true
+  try {
+    const response = await fetch(`${API_URL}/maintenanceChief`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({}),
+    })
+    if (!response.ok) return null
+    return await response.json().catch(() => null)
+  } catch {
+    return null
+  }
+}
