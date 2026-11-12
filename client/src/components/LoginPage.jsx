@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import PushButton from './PushButton'
+import LoginButton from './LoginButton'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -20,7 +20,7 @@ function validateField(name, value) {
   return ''
 }
 
-function LoginPage({ onSignIn, onClaimOwner, setupRequired, busy, error, fieldErrors = {} }) {
+function LoginPage({ onSignIn, onClaimOwner, setupRequired, busy, error, fieldErrors = {}, restoring = false }) {
   const [values, setValues] = useState({ name: '', email: '', password: '', setupKey: '' })
   const [errors, setErrors] = useState({})
   const [remember, setRemember] = useState(true)
@@ -110,6 +110,12 @@ function LoginPage({ onSignIn, onClaimOwner, setupRequired, busy, error, fieldEr
         <span className="bot-badge green">
           {setupRequired ? 'Locked until claimed' : 'Owner access only'}
         </span>
+
+        {restoring && (
+          <p className="auth-restoring" role="status">
+            Looking for a saved session…
+          </p>
+        )}
 
         {error && (
           <p className="auth-error" role="alert">
@@ -243,9 +249,14 @@ function LoginPage({ onSignIn, onClaimOwner, setupRequired, busy, error, fieldEr
             </div>
           )}
 
-          <PushButton type="submit" className="auth-submit" disabled={busy}>
-            {busy ? 'Checking…' : setupRequired ? 'Claim owner access' : 'Log in'}
-          </PushButton>
+          <LoginButton
+            type="submit"
+            variant="primary"
+            className="auth-submit"
+            disabled={busy || restoring}
+            label={busy ? 'Checking…' : setupRequired ? 'Claim owner access' : 'Log in'}
+            ariaLabel={setupRequired ? 'Claim owner access' : 'Log in to the console'}
+          />
         </form>
 
         <p className="auth-footer">

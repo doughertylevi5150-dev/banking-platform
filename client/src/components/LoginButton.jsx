@@ -2,6 +2,8 @@ function LoginButton({
   label = 'Log in',
   onClick,
   variant = 'secondary',
+  type = 'button',
+  disabled = false,
   ariaLabel = 'Log in to your account',
   className = '',
 }) {
@@ -9,9 +11,10 @@ function LoginButton({
 
   return (
     <button
-      type="button"
+      type={type}
       className={`${buttonClass} login-btn ${className}`.trim()}
       onClick={onClick}
+      disabled={disabled}
       aria-label={ariaLabel}
     >
       <svg

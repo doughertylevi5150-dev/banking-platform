@@ -625,6 +625,27 @@ a {
   width: 100%;
 }
 
+/* The card's own Log in button: same lock-icon button as the header. */
+.login-btn.auth-submit {
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.login-btn:disabled,
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-restoring {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .auth-footer {
   margin: 18px 0 0;
   text-align: center;

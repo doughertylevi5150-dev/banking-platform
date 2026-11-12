@@ -29,7 +29,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v16'
+const BUILD = 'v17'
 
 function readRoute() {
   const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')
@@ -214,7 +214,10 @@ function App() {
     }
   }
 
-  if (checking) {
+  // A saved session still gets the short "opening" screen while it is checked,
+  // but anyone without a token sees the sign-in card with its Log in button
+  // immediately, even if the auth service is slow or unreachable.
+  if (checking && token) {
     return (
       <div className="auth-shell">
         <p className="auth-loading">Opening the console…</p>
@@ -231,6 +234,7 @@ function App() {
         busy={busy}
         error={authError}
         fieldErrors={fieldErrors}
+        restoring={checking}
       />
     )
   }
