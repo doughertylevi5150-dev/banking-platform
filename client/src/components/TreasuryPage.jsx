@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { fetchTreasury, recordMoney, runLiveRead } from '../api/foundryApi'
 import { money, stamp } from '../lib/format'
+import PlaidPanel from './PlaidPanel'
 
 export default function TreasuryPage({ token, onJump }) {
   const [data, setData] = useState(null)
@@ -178,9 +179,12 @@ export default function TreasuryPage({ token, onJump }) {
           </form>
         </div>
 
-        <div className="foundry-panel">
-          <div className="foundry-panel-head">
-            <h3>Earnings by bot</h3>
+        <div className="foundry-stack">
+          <PlaidPanel token={token} />
+
+          <div className="foundry-panel">
+            <div className="foundry-panel-head">
+              <h3>Earnings by bot</h3>
             <span className="foundry-count">{data ? data.byBot.length : ''}</span>
           </div>
           <ul className="earn-list">
@@ -207,6 +211,7 @@ export default function TreasuryPage({ token, onJump }) {
               )
             })}
           </ul>
+          </div>
         </div>
       </div>
 

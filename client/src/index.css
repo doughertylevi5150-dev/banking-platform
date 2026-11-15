@@ -983,6 +983,12 @@ a {
   }
 }
 
+.foundry-stack {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
 .foundry-panel {
   display: grid;
   gap: 14px;
