@@ -96,17 +96,13 @@ export async function runMaintenanceOnce(token) {
  * An explicit press of the console's "Run now" button.
  *
  * The automatic tick is rate limited so a tab cannot flood the event log, but a
- * deliberate press should always get through: reset the client-side guards, run
- * one foundry tick, then one maintenance pass with the owner's session.
+ * deliberate press should always get through: reset the client-side guard and
+ * run one foundry tick. The server still holds its own five-minute limit, so a
+ * press straight after an automatic read answers `{ skipped: true }` instead of
+ * writing the same read twice.
  */
-export async function runSwarmNow(token) {
-  if (typeof window === 'undefined') return { tick: null, maintenance: null }
+export async function runSwarmNow() {
+  if (typeof window === 'undefined') return null
   lastAttemptAt = 0
-  const tickResult = await tick()
-  let maintenance = null
-  if (token) {
-    maintenanceRequested = false
-    maintenance = await runMaintenanceOnce(token)
-  }
-  return { tick: tickResult, maintenance }
+  return tick()
 }

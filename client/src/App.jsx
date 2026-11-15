@@ -210,11 +210,9 @@ function App() {
     setRunBusy(true)
     setRunNote('')
     try {
-      const result = await runSwarmNow(token)
-      const ticked = result?.tick && result.tick.skipped !== true
-      const clean = result?.maintenance?.clean
-      if (ticked) setRunNote(clean === false ? 'Ran, items to review' : 'Swarm moved')
-      else if (result?.tick?.skipped) setRunNote('Already read in the last 5 min')
+      const result = await runSwarmNow()
+      if (result && result.skipped !== true) setRunNote('Swarm moved')
+      else if (result?.skipped) setRunNote('Already read in the last 5 min')
       else setRunNote('Nothing came back')
     } catch {
       setRunNote('Could not reach the swarm')
