@@ -91,3 +91,22 @@ export async function runMaintenanceOnce(token) {
     return null
   }
 }
+
+/**
+ * An explicit press of the console's "Run now" button.
+ *
+ * The automatic tick is rate limited so a tab cannot flood the event log, but a
+ * deliberate press should always get through: reset the client-side guards, run
+ * one foundry tick, then one maintenance pass with the owner's session.
+ */
+export async function runSwarmNow(token) {
+  if (typeof window === 'undefined') return { tick: null, maintenance: null }
+  lastAttemptAt = 0
+  const tickResult = await tick()
+  let maintenance = null
+  if (token) {
+    maintenanceRequested = false
+    maintenance = await runMaintenanceOnce(token)
+  }
+  return { tick: tickResult, maintenance }
+}

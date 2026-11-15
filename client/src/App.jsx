@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { changePassword, claimOwner, fetchOwner, getStatus, signIn, signOut } from './api/authApi'
 import { clearToken, loadToken, saveToken } from './auth/session'
-import { runMaintenanceOnce, startSwarmTick } from './lib/swarmTick'
+import { runMaintenanceOnce, runSwarmNow, startSwarmTick } from './lib/swarmTick'
 import ActivityPage from './components/ActivityPage'
 import BotPage from './components/BotPage'
 import Foundry from './components/Foundry'
@@ -55,6 +55,8 @@ function App() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [note, setNote] = useState('')
   const [passwordOpen, setPasswordOpen] = useState(false)
+  const [runBusy, setRunBusy] = useState(false)
+  const [runNote, setRunNote] = useState('')
   const [pwBusy, setPwBusy] = useState(false)
   const [pwError, setPwError] = useState('')
   const [pwDone, setPwDone] = useState('')
@@ -201,6 +203,27 @@ function App() {
     setPwValues({ current: '', next: '' })
   }
 
+  // One press makes the swarm move now, instead of waiting on the throttled
+  // GitHub schedule or the five-minute console tick.
+  async function handleRunNow() {
+    if (runBusy) return
+    setRunBusy(true)
+    setRunNote('')
+    try {
+      const result = await runSwarmNow(token)
+      const ticked = result?.tick && result.tick.skipped !== true
+      const clean = result?.maintenance?.clean
+      if (ticked) setRunNote(clean === false ? 'Ran, items to review' : 'Swarm moved')
+      else if (result?.tick?.skipped) setRunNote('Already read in the last 5 min')
+      else setRunNote('Nothing came back')
+    } catch {
+      setRunNote('Could not reach the swarm')
+    } finally {
+      setRunBusy(false)
+      window.setTimeout(() => setRunNote(''), 6000)
+    }
+  }
+
   async function handleSignOut() {
     const current = token
     clearToken()
@@ -270,9 +293,19 @@ function App() {
           <span className="session-chip" title={`Signed in as ${owner.email}`}>
             {owner.name || owner.email}
           </span>
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={handleRunNow}
+            disabled={runBusy}
+            aria-label="Run the swarm now"
+          >
+            {runBusy ? 'Running…' : 'Run now'}
+          </button>
           <LoginButton label="Password" onClick={() => setPasswordOpen(true)} ariaLabel="Change your password" />
           <LoginButton label="Log out" onClick={handleSignOut} />
           <PushButton onClick={() => jumpToSection('foundry')}>Control hub</PushButton>
+          {runNote && <span className="session-chip" role="status">{runNote}</span>}
         </div>
       </header>
 
