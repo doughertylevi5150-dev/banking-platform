@@ -150,6 +150,12 @@ export default function StorePage({ query, signedInEmail = '', onOpenConsole }) 
     }
   }, [paidFlag, sessionId])
 
+  // Leaving the confirmation view (or opening the plain store again) should not
+  // leave a stale receipt sitting on the page.
+  useEffect(() => {
+    if (paidFlag !== '1') setReceipt(null)
+  }, [paidFlag])
+
   const byPlan = useMemo(() => {
     const map = {}
     for (const plan of plans) map[plan.id] = plan
