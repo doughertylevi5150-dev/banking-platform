@@ -10,6 +10,7 @@ import LoginButton from './components/LoginButton'
 import LoginPage from './components/LoginPage'
 import OperatorPage from './components/OperatorPage'
 import PushButton from './components/PushButton'
+import StorePage from './components/StorePage'
 import TreasuryPage from './components/TreasuryPage'
 
 const signalBars = [42, 68, 55, 84, 62, 96, 74, 58, 88, 66, 92, 78]
@@ -26,23 +27,34 @@ const NAV = [
   { key: 'funding', label: 'Funding', hash: '#/funding' },
   { key: 'treasury', label: 'Treasury', hash: '#/treasury' },
   { key: 'operator', label: 'Operator', hash: '#/operator' },
+  { key: 'store', label: 'Store', hash: '#/store' },
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
 const BUILD = 'v18'
 
 function readRoute() {
-  const raw = (typeof window === 'undefined' ? '' : window.location.hash).replace(/^#\/?/, '').replace(/\/$/, '')
-  if (!raw) return { name: 'console', anchor: '' }
-  if (raw === 'foundry' || raw === 'swarm') return { name: 'console', anchor: raw }
+  const empty = new URLSearchParams()
+  if (typeof window === 'undefined') return { name: 'console', anchor: '', query: empty }
 
-  const [head, tail] = raw.split('/')
-  if (head === 'activity') return { name: 'activity' }
-  if (head === 'funding') return { name: 'funding', route: tail || '' }
-  if (head === 'treasury') return { name: 'treasury' }
-  if (head === 'operator') return { name: 'operator' }
-  if (head === 'bot' && tail) return { name: 'bot', slug: tail }
-  return { name: 'console', anchor: '' }
+  // Stripe sends people back with a query string after the hash, so the query
+  // has to be peeled off before the path is split.
+  const raw = (window.location.hash || '').replace(/^#\/?/, '')
+  const [pathPart, queryPart] = raw.split('?')
+  const query = new URLSearchParams(queryPart || '')
+  const path = pathPart.replace(/\/$/, '')
+
+  if (!path) return { name: 'console', anchor: '', query }
+  if (path === 'foundry' || path === 'swarm') return { name: 'console', anchor: path, query }
+
+  const [head, tail] = path.split('/')
+  if (head === 'store') return { name: 'store', query }
+  if (head === 'activity') return { name: 'activity', query }
+  if (head === 'funding') return { name: 'funding', route: tail || '', query }
+  if (head === 'treasury') return { name: 'treasury', query }
+  if (head === 'operator') return { name: 'operator', query }
+  if (head === 'bot' && tail) return { name: 'bot', slug: tail, query }
+  return { name: 'console', anchor: '', query }
 }
 
 function App() {
@@ -238,6 +250,20 @@ function App() {
   // A saved session still gets the short "opening" screen while it is checked,
   // but anyone without a token sees the sign-in card with its Log in button
   // immediately, even if the auth service is slow or unreachable.
+  // The store is public: a shop owner should be able to buy without an account.
+  if (route.name === 'store') {
+    return (
+      <StorePage
+        query={route.query}
+        signedInEmail={owner?.email || ''}
+        onOpenConsole={() => {
+          window.location.hash = '#/'
+          window.scrollTo({ top: 0 })
+        }}
+      />
+    )
+  }
+
   if (checking && token) {
     return (
       <div className="auth-shell">

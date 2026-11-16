@@ -264,6 +264,10 @@ function LoginPage({ onSignIn, onClaimOwner, setupRequired, busy, error, fieldEr
             ? 'This console stays locked to whoever claims it first.'
             : 'No sign-up. Access is limited to the console owner.'}
         </p>
+
+        <p className="auth-store-link">
+          <a href="#/store">Tap Card System store →</a>
+        </p>
       </div>
     </div>
   )
