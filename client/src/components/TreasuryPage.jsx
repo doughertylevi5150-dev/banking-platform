@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { fetchTreasury, recordMoney, runLiveRead } from '../api/foundryApi'
 import { money, stamp } from '../lib/format'
+import BillingPanel from './BillingPanel'
 import PlaidPanel from './PlaidPanel'
 
 export default function TreasuryPage({ token, onJump }) {
@@ -180,6 +181,7 @@ export default function TreasuryPage({ token, onJump }) {
         </div>
 
         <div className="foundry-stack">
+          <BillingPanel />
           <PlaidPanel token={token} />
 
           <div className="foundry-panel">
