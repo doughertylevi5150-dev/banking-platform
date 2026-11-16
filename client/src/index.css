@@ -2181,6 +2181,19 @@ a {
   gap: 10px;
 }
 
+/* The console's ghost button is full width inside its panels; on the store it
+   sits in a row next to a primary button. */
+.store-shell .ghost-btn {
+  width: auto;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.store-top-actions .secondary-btn,
+.store-hero-actions .primary-btn {
+  white-space: nowrap;
+}
+
 .store-banner {
   margin: 18px 0 0;
   padding: 12px 16px;
