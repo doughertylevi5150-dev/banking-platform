@@ -1,0 +1,304 @@
+{
+  "accounts": [
+    {
+      "account_id": "31qEA6LPwGumkA4Z5mGbfyGwr4mL6nSZlQqpZ",
+      "apy": 1.85,
+      "balances": {
+        "available": 43200,
+        "current": 43200,
+        "iso_currency_code": "USD",
+        "limit": null,
+        "margin_loan_amount": null,
+        "unofficial_currency_code": null
+      },
+      "mask": "4444",
+      "name": "Plaid Money Market",
+      "official_name": "Plaid Platinum Standard 1.85% Interest Money Market",
+      "subtype": "money market",
+      "type": "depository"
+    },
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "apy": null,
+      "balances": {
+        "available": null,
+        "current": 415.57,
+        "iso_currency_code": "USD",
+        "limit": null,
+        "margin_loan_amount": null,
+        "unofficial_currency_code": null
+      },
+      "mask": "5555",
+      "name": "Plaid IRA",
+      "official_name": null,
+      "subtype": "ira",
+      "type": "investment"
+    }
+  ],
+  "holdings": [
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "cost_basis": 0.01,
+      "institution_price": 1,
+      "institution_price_as_of": "2021-05-25",
+      "institution_price_datetime": null,
+      "institution_value": 0.01,
+      "iso_currency_code": "USD",
+      "quantity": 0.01,
+      "security_id": "d6ePmbPxgWCWmMVv66q9iPV94n91vMtov5Are",
+      "unofficial_currency_code": null,
+      "vested_quantity": null,
+      "vested_value": null,
+      "tax_lots": []
+    },
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "cost_basis": 100,
+      "institution_price": 0.011,
+      "institution_price_as_of": "2021-05-25",
+      "institution_price_datetime": null,
+      "institution_value": 110,
+      "iso_currency_code": "USD",
+      "quantity": 10000,
+      "security_id": "8E4L9XLl6MudjEpwPAAgivmdZRdBPJuvMPlPb",
+      "unofficial_currency_code": null,
+      "vested_quantity": null,
+      "vested_value": null,
+      "tax_lots": []
+    },
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "cost_basis": 94.808,
+      "institution_price": 94.808,
+      "institution_price_as_of": "2021-04-13",
+      "institution_price_datetime": null,
+      "institution_value": 94.808,
+      "iso_currency_code": "USD",
+      "quantity": 1,
+      "security_id": "Lxe4yz4XQEtwb2YArO7RFMpPDvPxy7FALRyea",
+      "unofficial_currency_code": null,
+      "vested_quantity": null,
+      "vested_value": null,
+      "tax_lots": []
+    },
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "cost_basis": 200,
+      "institution_price": 42.15,
+      "institution_price_as_of": "2021-05-25",
+      "institution_price_datetime": null,
+      "institution_value": 210.75,
+      "iso_currency_code": "USD",
+      "quantity": 5,
+      "security_id": "abJamDazkgfvBkVGgnnLUWXoxnomp5up8llg4",
+      "unofficial_currency_code": null,
+      "vested_quantity": null,
+      "vested_value": null,
+      "tax_lots": []
+    }
+  ],
+  "item": {
+    "available_products": [
+      "assets",
+      "balance",
+      "beacon",
+      "cra_base_report",
+      "cra_income_insights",
+      "signal",
+      "identity",
+      "identity_match",
+      "income",
+      "income_verification",
+      "investments",
+      "processor_identity",
+      "recurring_transactions",
+      "transactions"
+    ],
+    "billed_products": [
+      "investments_auth"
+    ],
+    "consent_expiration_time": null,
+    "error": null,
+    "institution_id": "ins_115616",
+    "institution_name": "Vanguard",
+    "item_id": "7qBnDwLP3aIZkD7NKZ5ysk5X9xVxDWHg65oD5",
+    "products": [
+      "investments_auth"
+    ],
+    "update_type": "background",
+    "webhook": "https://www.genericwebhookurl.com/webhook"
+  },
+  "numbers": {
+    "acats": [
+      {
+        "account": "TR5555",
+        "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+        "dtc_numbers": [
+          "1111",
+          "2222",
+          "3333"
+        ]
+      }
+    ]
+  },
+  "owners": [
+    {
+      "account_id": "31qEA6LPwGumkA4Z5mGbfyGwr4mL6nSZlQqpZ",
+      "names": [
+        "Alberta Bobbeth Charleson"
+      ]
+    },
+    {
+      "account_id": "xlP8npRxwgCj48LQbjxWipkeL3gbyXf64knoy",
+      "names": [
+        "Alberta Bobbeth Charleson"
+      ]
+    }
+  ],
+  "request_id": "hPCXou4mm9Qwzzu",
+  "securities": [
+    {
+      "close_price": 0.011,
+      "close_price_as_of": null,
+      "cusip": null,
+      "cfi_code": "OCASPS",
+      "figi": null,
+      "industry": null,
+      "institution_id": null,
+      "institution_security_id": null,
+      "is_cash_equivalent": false,
+      "isin": null,
+      "iso_currency_code": "USD",
+      "market_identifier_code": null,
+      "name": "Nflx Feb 01'18 $355 Call",
+      "option_contract": null,
+      "fixed_income": null,
+      "proxy_security_id": null,
+      "sector": null,
+      "security_id": "8E4L9XLl6MudjEpwPAAgivmdZRdBPJuvMPlPb",
+      "sedol": null,
+      "ticker_symbol": "NFLX180201C00355000",
+      "type": "derivative",
+      "subtype": "option",
+      "unofficial_currency_code": null,
+      "update_datetime": null
+    },
+    {
+      "close_price": 94.808,
+      "close_price_as_of": "2023-11-02",
+      "cusip": "912797HE0",
+      "cfi_code": "DYZTXR",
+      "figi": null,
+      "fixed_income": {
+        "face_value": 100,
+        "issue_date": "2023-11-02",
+        "maturity_date": "2024-10-31",
+        "yield_rate": {
+          "percentage": 5.43,
+          "type": "coupon_equivalent"
+        }
+      },
+      "industry": "Sovereign Government",
+      "institution_id": null,
+      "institution_security_id": null,
+      "is_cash_equivalent": false,
+      "isin": null,
+      "iso_currency_code": "USD",
+      "market_identifier_code": null,
+      "name": "US Treasury Bill - 5.43% 31/10/2024 USD 100",
+      "option_contract": null,
+      "proxy_security_id": null,
+      "sector": "Government",
+      "security_id": "Lxe4yz4XQEtwb2YArO7RFMpPDvPxy7FALRyea",
+      "sedol": null,
+      "ticker_symbol": null,
+      "type": "fixed income",
+      "subtype": "bill",
+      "unofficial_currency_code": null,
+      "update_datetime": null
+    },
+    {
+      "close_price": 9.08,
+      "close_price_as_of": "2024-09-09",
+      "cusip": null,
+      "cfi_code": "CIOIBS",
+      "figi": null,
+      "fixed_income": null,
+      "industry": "Investment Trusts or Mutual Funds",
+      "institution_id": null,
+      "institution_security_id": null,
+      "is_cash_equivalent": false,
+      "isin": null,
+      "iso_currency_code": "USD",
+      "market_identifier_code": null,
+      "name": "DoubleLine Total Return Bond I",
+      "option_contract": null,
+      "proxy_security_id": null,
+      "sector": "Miscellaneous",
+      "security_id": "AE5rBXra1AuZLE34rkvvIyG8918m3wtRzElnJ",
+      "sedol": null,
+      "ticker_symbol": "DBLTX",
+      "type": "mutual fund",
+      "subtype": "mutual fund",
+      "unofficial_currency_code": null,
+      "update_datetime": null
+    },
+    {
+      "close_price": 42.15,
+      "close_price_as_of": null,
+      "cusip": null,
+      "cfi_code": "CEOIES",
+      "figi": null,
+      "fixed_income": null,
+      "industry": null,
+      "institution_id": null,
+      "institution_security_id": null,
+      "is_cash_equivalent": false,
+      "isin": null,
+      "iso_currency_code": "USD",
+      "market_identifier_code": null,
+      "name": "iShares Inc MSCI Brazil",
+      "option_contract": null,
+      "proxy_security_id": null,
+      "sector": null,
+      "security_id": "abJamDazkgfvBkVGgnnLUWXoxnomp5up8llg4",
+      "sedol": null,
+      "ticker_symbol": "EWZ",
+      "type": "etf",
+      "subtype": "etf",
+      "unofficial_currency_code": null,
+      "update_datetime": null
+    },
+    {
+      "close_price": 1,
+      "close_price_as_of": null,
+      "cusip": null,
+      "cfi_code": null,
+      "figi": null,
+      "fixed_income": null,
+      "industry": null,
+      "institution_id": null,
+      "institution_security_id": null,
+      "is_cash_equivalent": true,
+      "isin": null,
+      "iso_currency_code": "USD",
+      "market_identifier_code": null,
+      "name": "U S Dollar",
+      "option_contract": null,
+      "proxy_security_id": null,
+      "sector": null,
+      "security_id": "d6ePmbPxgWCWmMVv66q9iPV94n91vMtov5Are",
+      "sedol": null,
+      "ticker_symbol": null,
+      "type": "cash",
+      "subtype": "cash",
+      "unofficial_currency_code": null,
+      "update_datetime": null
+    }
+  ],
+  "data_sources": {
+    "numbers": "INSTITUTION",
+    "owners": "INSTITUTION",
+    "holdings": "INSTITUTION"
+  }
+}
