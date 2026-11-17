@@ -3,7 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 /**
  * Accounts, money and activity desk for the foundry.
  *
- * Actions: state · activity · bot · treasury · keys · live · record · feed · setAccount · tick
+ * Actions: state · activity · bot · treasury · keys · live · record · feed · setAccount · prospects · tick
  * Everything except `tick` needs the owner's session.
  *
  * Providers are wired, not simulated: when the owner stores a provider key as a
@@ -118,7 +118,62 @@ const PROVIDERS: Provider[] = [
     keyPage: 'https://dashboard.plaid.com/team/keys',
     bots: ['spend', 'fee-auditor', 'subscription-pruner'],
   },
+  {
+    id: 'places',
+    label: 'Google Places',
+    env: ['GOOGLE_PLACES_API_KEY'],
+    wired: true,
+    note: 'Finds Tap Card System prospects (car washes, batting cages, pet washes, parking) near any city.',
+    keyPage: 'https://console.cloud.google.com/apis/credentials',
+    bots: ['prospector'],
+  },
 ];
+
+/* ------------------------------------------------------------------ */
+/* Prospects (Google Places Text Search, New API)                      */
+/* ------------------------------------------------------------------ */
+
+const PROSPECT_KINDS: Record<string, string> = {
+  carwash: 'self serve car wash',
+  batting: 'batting cages',
+  petwash: 'self serve dog wash',
+  parking: 'unattended parking lot',
+  laundromat: 'laundromat',
+  arcade: 'arcade',
+};
+
+async function findProspects(kind: string, near: string) {
+  const key = Deno.env.get('GOOGLE_PLACES_API_KEY') || '';
+  if (!key) return { error: 'Add GOOGLE_PLACES_API_KEY as a secret to turn on the prospector.', places: [] };
+  const what = PROSPECT_KINDS[kind] || PROSPECT_KINDS.carwash;
+  const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': key,
+      'X-Goog-FieldMask':
+        'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.nationalPhoneNumber,places.websiteUri,places.googleMapsUri,places.businessStatus',
+    },
+    body: JSON.stringify({ textQuery: `${what} in ${near}`, pageSize: 20 }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) return { error: payload?.error?.message || 'Google Places did not answer.', places: [] };
+  const places = (payload?.places || [])
+    .filter((place: any) => place.businessStatus !== 'CLOSED_PERMANENTLY')
+    .map((place: any) => ({
+      id: place.id,
+      name: place.displayName?.text || 'Unnamed',
+      address: place.formattedAddress || '',
+      rating: num(place.rating),
+      reviews: num(place.userRatingCount),
+      phone: place.nationalPhoneNumber || '',
+      website: place.websiteUri || '',
+      maps: place.googleMapsUri || '',
+    }))
+    // Busy, well-reviewed counters are the best first calls.
+    .sort((a: any, b: any) => b.reviews - a.reviews);
+  return { query: `${what} in ${near}`, places };
+}
 
 function providerStatus() {
   return PROVIDERS.map((provider) => {
@@ -755,6 +810,20 @@ async function handle(req: Request) {
 
   if (action === 'treasury') {
     return json(req, await buildTreasury(store));
+  }
+
+  if (action === 'prospects') {
+    const near = String(body.near || 'San Diego, CA').slice(0, 80);
+    const result = await findProspects(String(body.kind || 'carwash'), near);
+    if (!result.error && result.places.length) {
+      await store.FoundryEvent.create({
+        kind: 'live',
+        message: `Prospector found ${result.places.length} leads: ${result.query}.`,
+        bot_slug: 'prospector',
+        created_at: new Date().toISOString(),
+      });
+    }
+    return json(req, result);
   }
 
   if (action === 'keys') {

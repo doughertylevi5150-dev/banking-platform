@@ -72,3 +72,5 @@ export const fetchFunding = (token) => desk('funding', token)
 
 export const setFundingStatus = (token, route, status, note = '') =>
   desk('updateFunding', token, { route, status, note })
+
+export const findProspects = (token, kind, near) => desk('prospects', token, { kind, near })

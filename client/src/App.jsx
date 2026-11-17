@@ -15,6 +15,7 @@ const BotPage = lazy(() => import('./components/BotPage'))
 const Foundry = lazy(() => import('./components/Foundry'))
 const FundingPage = lazy(() => import('./components/FundingPage'))
 const OperatorPage = lazy(() => import('./components/OperatorPage'))
+const ProspectsPage = lazy(() => import('./components/ProspectsPage'))
 const StorePage = lazy(() => import('./components/StorePage'))
 const TreasuryPage = lazy(() => import('./components/TreasuryPage'))
 
@@ -35,6 +36,7 @@ const NAV = [
   { key: 'funding', label: 'Funding', hash: '#/funding' },
   { key: 'treasury', label: 'Treasury', hash: '#/treasury' },
   { key: 'operator', label: 'Operator', hash: '#/operator' },
+  { key: 'prospects', label: 'Prospects', hash: '#/prospects' },
   { key: 'store', label: 'Store', hash: '#/store' },
 ]
 
@@ -61,6 +63,7 @@ function readRoute() {
   if (head === 'funding') return { name: 'funding', route: tail || '', query }
   if (head === 'treasury') return { name: 'treasury', query }
   if (head === 'operator') return { name: 'operator', query }
+  if (head === 'prospects') return { name: 'prospects', query }
   if (head === 'bot' && tail) return { name: 'bot', slug: tail, query }
   return { name: 'console', anchor: '', query }
 }
@@ -291,6 +294,7 @@ function App() {
         { id: 'act-run', group: 'Actions', label: 'Run the swarm now', run: handleRunNow },
         { id: 'act-ask', group: 'Actions', label: 'Ask the Operator', hint: 'AI over live state', run: () => { window.location.hash = '#/operator' } },
         { id: 'act-money', group: 'Actions', label: 'Record money or link a bank', hint: 'Treasury', run: () => { window.location.hash = '#/treasury' } },
+        { id: 'act-prospects', group: 'Actions', label: 'Find Tap Card prospects', hint: 'Google Places', run: () => { window.location.hash = '#/prospects' } },
         { id: 'act-fund', group: 'Actions', label: 'Start a funding packet', hint: 'Fund Bot', run: () => { window.location.hash = '#/funding' } },
         { id: 'act-pw', group: 'Account', label: 'Change password', run: () => setPasswordOpen(true) },
         { id: 'act-out', group: 'Account', label: 'Log out', run: handleSignOut },
@@ -433,6 +437,7 @@ function App() {
         {route.name === 'funding' && <FundingPage token={token} onJump={jumpTo} focusRoute={route.route} />}
         {route.name === 'treasury' && <TreasuryPage token={token} onJump={jumpTo} />}
         {route.name === 'operator' && <OperatorPage token={token} onJump={jumpTo} />}
+        {route.name === 'prospects' && <ProspectsPage token={token} onJump={jumpTo} />}
         {route.name === 'bot' && <BotPage token={token} slug={route.slug} onJump={jumpTo} />}
         </Suspense>
       </main>

@@ -2692,3 +2692,37 @@ a {
 .cmdk-foot {
   border-top: 1px solid var(--line);
 }
+
+.prospect-near {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.prospect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.prospect-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prospect-meta {
+  color: var(--amber);
+  font-size: 0.85rem;
+}
+
+.prospect-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.prospect-actions a {
+  text-decoration: none;
+}
