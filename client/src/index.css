@@ -2574,3 +2574,121 @@ a {
     margin-top: 24px;
   }
 }
+
+/* v19: live hero pulse, command palette, lazy page loading */
+.pulse-grid strong {
+  font-size: 1.25rem;
+}
+
+.offline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--amber);
+  display: inline-block;
+}
+
+.signal-empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  background: none !important;
+  align-self: center;
+  text-align: center;
+}
+
+.page-loading {
+  padding: 48px 0;
+  text-align: center;
+}
+
+.cmdk-trigger kbd {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(2, 8, 18, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 16px 16px;
+}
+
+.cmdk {
+  width: min(560px, 100%);
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.cmdk-input {
+  width: 100%;
+  padding: 18px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  outline: none;
+  font-size: 1rem;
+}
+
+.cmdk-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+
+.cmdk-group {
+  padding: 10px 12px 4px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cmdk-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cmdk-item.is-active {
+  background: rgba(77, 141, 255, 0.18);
+}
+
+.cmdk-hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.cmdk-empty,
+.cmdk-foot {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.cmdk-foot {
+  border-top: 1px solid var(--line);
+}
