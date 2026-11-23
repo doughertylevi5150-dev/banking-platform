@@ -17,3 +17,12 @@ verify_jwt = false
 
 [functions.plaidApi]
 verify_jwt = false
+
+[functions.foundryApi]
+verify_jwt = false
+
+[functions.stripeCheckout]
+verify_jwt = false
+
+[functions.maintenanceChief]
+verify_jwt = false

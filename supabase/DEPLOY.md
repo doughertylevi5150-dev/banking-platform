@@ -1,6 +1,6 @@
 # Deploying the console backend to Supabase (v20)
 
-Base44 is gone from the backend. Five Edge Functions replace the Base44 Deno
+Base44 is gone from the backend. Eight Edge Functions replace the Base44 Deno
 functions with the same names, so the URL paths stay the same:
 
     https://<REF>.supabase.co/functions/v1/bankingAuth
@@ -8,10 +8,27 @@ functions with the same names, so the URL paths stay the same:
     https://<REF>.supabase.co/functions/v1/foundryOps
     https://<REF>.supabase.co/functions/v1/operatorAI
     https://<REF>.supabase.co/functions/v1/plaidApi
+    https://<REF>.supabase.co/functions/v1/foundryApi
+    https://<REF>.supabase.co/functions/v1/stripeCheckout
+    https://<REF>.supabase.co/functions/v1/maintenanceChief
 
-Data lives in Postgres (supabase/migrations/0001_init.sql). The shared adapter
+Data lives in Postgres (supabase/migrations/0001_init.sql, plus indexes in
+0002_foundry_api_maintenance.sql). The shared adapter
 supabase/functions/_shared/store.ts gives the functions the same
-list/filter/get/create/update/delete calls Base44 entities had.
+list/filter/get/create/update/delete calls Base44 entities had;
+supabase/functions/_shared/foundry.ts holds the starting-swarm seed that
+foundryApi and maintenanceChief share.
+
+| Function | Session | Actions |
+|---|---|---|
+| bankingAuth | public (it issues the session) | status, setup, login, me, logout |
+| bankingPassword | owner | change password |
+| foundryOps | owner (`tick` public, rate limited) | state, activity, bot, treasury, keys, live, record, feed, setAccount, funding, updateFunding, prospects, tick |
+| operatorAI | owner | Operator chat |
+| plaidApi | owner / service token | Plaid Link + reads |
+| foundryApi | owner (`generate` public, capped at 6 pending) | state, draft, decide, toggle, retire, generate |
+| stripeCheckout | public | plans, create, verify |
+| maintenanceChief | owner | one health/maintenance pass per call |
 
 ## 1. Create / link the project
 
@@ -29,11 +46,16 @@ Either push the migration:
 supabase db push
 ```
 
-or paste `supabase/migrations/0001_init.sql` into Dashboard → SQL Editor → Run.
+or paste `supabase/migrations/0001_init.sql` and then
+`supabase/migrations/0002_foundry_api_maintenance.sql` into Dashboard → SQL
+Editor → Run.
 It creates 9 tables (banking_owner, banking_session, banking_attempt,
 foundry_bot, foundry_proposal, foundry_event, foundry_ledger, foundry_funding,
 plaid_item), an updated_date trigger on each, and enables RLS with no policies
-(only the service role used by the functions can read/write).
+(only the service role used by the functions can read/write). 0002 adds no
+tables: a unique index on `foundry_bot.slug` (so two first loads cannot seed
+the swarm twice; skipped with a NOTICE if duplicate slugs already exist) and
+indexes for session/attempt trimming and the maintenance event lookup.
 
 ## 3. Set the secrets
 
@@ -60,7 +82,9 @@ Full list the code reads:
 | OPENAI_API_KEY | operatorAI | optional; without it the Operator answers from console state ("offline" mode) |
 | OPENAI_MODEL | operatorAI | optional, default `gpt-4o-mini` |
 | OPENAI_BASE_URL | operatorAI | optional, default `https://api.openai.com/v1` (any OpenAI-compatible API) |
-| STRIPE_SECRET_KEY | foundryOps | live balance |
+| STRIPE_SECRET_KEY | foundryOps, stripeCheckout | live balance; Checkout Sessions for #/store and Treasury "Get paid". `sk_live_`/`rk_live_` = live, anything else = test mode. Without it the store still lists plans and checkout answers with a clear "STRIPE_SECRET_KEY is missing" error (503) |
+| STRIPE_PRICE_INSTALL, STRIPE_PRICE_MONTHLY, STRIPE_PRICE_FOUNDING | stripeCheckout | optional existing Stripe price ids (`price_...`). When set, checkout uses that price and the store shows its real amount; when unset, the session uses inline price_data at $950 one time / $39 per month / $250 one time |
+| STORE_URL | stripeCheckout | optional fallback return page (e.g. `https://<user>.github.io/<repo>/`) when the client sends no `origin` |
 | MERCURY_API_TOKEN | foundryOps | treasury balances |
 | KRAKEN_API_KEY, KRAKEN_API_SECRET | foundryOps | balances (trade-only key) |
 | GOOGLE_PLACES_API_KEY | foundryOps | prospector |
@@ -83,6 +107,9 @@ supabase functions deploy bankingPassword
 supabase functions deploy foundryOps
 supabase functions deploy operatorAI
 supabase functions deploy plaidApi
+supabase functions deploy foundryApi
+supabase functions deploy stripeCheckout
+supabase functions deploy maintenanceChief
 ```
 
 (`--no-verify-jwt` on each command does the same if config.toml is not picked up.)
@@ -112,6 +139,11 @@ accept either).
 1. Open the console → it reports setup required → claim the owner with
    `OWNER_SETUP_KEY` (Base44 data is not migrated; the old owner, sessions,
    bots, ledger and Plaid items do not come across).
+   Signing in fires one `maintenanceChief` pass, which seeds the starting
+   swarm (Think Bot, Bot Maker, NFT/Buy/Sell Bot, Scraper Bot, Maintenance
+   Bot, Treasury Bot, Fraud Watch, Payroll Runner, Spend Analyst, Fund Bot)
+   when `foundry_bot` is empty; `foundryApi` state/draft/generate seed the
+   same way if they run first.
 2. Seed funding routes if you want the Fund Bot desk populated — the table is
    the route catalogue (route must be unique):
 
@@ -129,10 +161,27 @@ curl -s -X POST https://<REF>.supabase.co/functions/v1/bankingAuth \
 # -> {"setupRequired":true,"setupConfigured":true}
 ```
 
-## Not covered by these five functions
+## Notes on the three v20 follow-up functions
 
-The client also calls `foundryApi` (state/draft/decide/toggle/retire),
-`stripeCheckout` and `maintenanceChief`. Their Base44 sources are not in this
-repo, so they are not deployed here; those buttons will fail until they are
-ported (`server/routes/foundry.js` mirrors `foundryApi` and is the best
-starting point).
+- **foundryApi** is ported from `server/routes/foundry.js`. Differences: rows
+  live in Postgres instead of a JSON file; Fund Bot is added to the seed; the
+  event log is not capped at 200 rows; approving a concept whose slug matches a
+  retired bot gets a suffixed slug (the unique index would reject a repeat).
+- **stripeCheckout** had no source in the repo or `server/`; it is written
+  against `client/src/api/billingApi.js`, `StorePage.jsx` and `BillingPanel.jsx`.
+  Stripe returns customers to `<origin>#/store?paid=1&plan=<id>&session_id=...`
+  (or `paid=0` on cancel), and the store confirms with `verify`.
+- **maintenanceChief** had no source either; it checks every table, seeds an
+  empty swarm, deletes expired sessions and lapsed lockout windows, adopts blank
+  account fields, flags running bots without a charter and a feed older than two
+  hours, stamps Maintenance Bot, and logs one `maintenance` event at most every
+  10 minutes. Returns `{ ok, status: healthy|attention|degraded, tables, trimmed, seeded, roster, issues, note }`.
+
+Smoke tests:
+
+```sh
+curl -s -X POST https://<REF>.supabase.co/functions/v1/stripeCheckout \
+  -H 'content-type: application/json' -d '{"action":"plans"}'
+curl -s -X POST https://<REF>.supabase.co/functions/v1/maintenanceChief \
+  -H 'content-type: application/json' -H 'x-console-token: <session token>' -d '{}'
+```
