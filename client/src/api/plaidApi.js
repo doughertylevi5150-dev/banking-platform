@@ -1,10 +1,11 @@
+import { HOSTED_API_BASE, apiHeaders } from './config.js'
+
 /**
  * Client for the Plaid bank link. Uses the hosted functions build so the static
  * Pages bundle can reach it without a proxy, and sends the owner's console token
  * the same way the foundry desk does.
  */
-const HOSTED_API = 'https://base44.app/api/apps/6ae17320e2bf99b777448a91/functions'
-const API_URL = (import.meta.env.VITE_API_URL || HOSTED_API).replace(/\/$/, '')
+const API_URL = HOSTED_API_BASE
 
 async function call(action, { token, body = {} } = {}) {
   let response
@@ -12,10 +13,7 @@ async function call(action, { token, body = {} } = {}) {
   try {
     response = await fetch(`${API_URL}/plaidApi`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: apiHeaders(token, API_URL),
       body: JSON.stringify({ action, ...body }),
     })
   } catch {

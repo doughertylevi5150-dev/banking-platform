@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Local dev talks to the Express auth server; production uses VITE_API_URL.
+      // Local dev talks to the Express auth server; production uses VITE_API_BASE (Supabase functions).
       '/api': {
         target: process.env.VITE_DEV_API || 'http://localhost:4000',
         changeOrigin: true,

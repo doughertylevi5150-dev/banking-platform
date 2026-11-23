@@ -1,3 +1,5 @@
+import { API_BASE, apiHeaders } from '../api/config.js'
+
 /**
  * Keeps the universe ticking from the console.
  *
@@ -12,10 +14,7 @@
  * log: the server holds the rate limit and answers `{ skipped: true }` when a
  * read already happened.
  */
-const HOSTED_API = 'https://base44.app/api/apps/6ae17320e2bf99b777448a91/functions'
-const ON_LOCAL_HOST =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
-const API_URL = (import.meta.env.VITE_API_URL || (ON_LOCAL_HOST ? '/api' : HOSTED_API)).replace(/\/$/, '')
+const API_URL = API_BASE
 
 const INTERVAL_MS = 5 * 60 * 1000
 
@@ -33,7 +32,7 @@ async function tick() {
   try {
     const response = await fetch(`${API_URL}/foundryOps`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: apiHeaders(),
       body: JSON.stringify({ action: 'tick' }),
     })
     if (!response.ok) return null
@@ -82,7 +81,7 @@ export async function runMaintenanceOnce(token) {
   try {
     const response = await fetch(`${API_URL}/maintenanceChief`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: apiHeaders(token),
       body: JSON.stringify({}),
     })
     if (!response.ok) return null

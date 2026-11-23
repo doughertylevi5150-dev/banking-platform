@@ -1,17 +1,16 @@
+import { API_BASE, apiHeaders } from './config.js'
+
 /**
  * Thin client for the auth API. One endpoint, one action per call, so the same
  * bundle works against the local Express server (/api/*) and the hosted
  * functions build (…/functions/bankingAuth).
  *
- * Local dev: VITE_API_URL is unset, paths resolve under /api and Vite proxies
+ * Local dev: VITE_API_BASE is unset, paths resolve under /api and Vite proxies
  * them to the Express server on port 4000.
  */
 // On a static host there is no /api to proxy to, so calls go to the hosted
 // functions build unless a build-time override is supplied.
-const HOSTED_API = 'https://base44.app/api/apps/6ae17320e2bf99b777448a91/functions'
-const ON_LOCAL_HOST =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
-const API_URL = (import.meta.env.VITE_API_URL || (ON_LOCAL_HOST ? '/api' : HOSTED_API)).replace(/\/$/, '')
+const API_URL = API_BASE
 
 function url(path) {
   return `${API_URL}${path}`
@@ -34,10 +33,7 @@ async function call(action, { body = {}, token, path = '/bankingAuth' } = {}) {
   try {
     response = await fetch(url(path), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: apiHeaders(token),
       body: JSON.stringify({ action, ...body }),
       signal: controller.signal,
     })

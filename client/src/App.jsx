@@ -41,7 +41,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v19'
+const BUILD = 'v20'
 
 function readRoute() {
   const empty = new URLSearchParams()

@@ -1,3 +1,5 @@
+import { API_BASE, apiHeaders } from './config.js'
+
 /**
  * Client for the bot foundry. Same endpoint style as the auth API so the bundle
  * works against the local Express server (/api/foundryApi) and the hosted
@@ -5,10 +7,7 @@
  */
 // On a static host there is no /api to proxy to, so calls go to the hosted
 // functions build unless a build-time override is supplied.
-const HOSTED_API = 'https://base44.app/api/apps/6ae17320e2bf99b777448a91/functions'
-const ON_LOCAL_HOST =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
-const API_URL = (import.meta.env.VITE_API_URL || (ON_LOCAL_HOST ? '/api' : HOSTED_API)).replace(/\/$/, '')
+const API_URL = API_BASE
 
 async function call(action, { body = {}, token, desk = false } = {}) {
   let response
@@ -16,10 +15,7 @@ async function call(action, { body = {}, token, desk = false } = {}) {
   try {
     response = await fetch(`${API_URL}/${desk ? 'foundryOps' : 'foundryApi'}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: apiHeaders(token),
       body: JSON.stringify({ action, ...body }),
     })
   } catch {

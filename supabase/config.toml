@@ -1,0 +1,19 @@
+# Supabase CLI config for the LevisBotUniverse banking console.
+# The console authenticates with its own session tokens (banking_session),
+# not Supabase Auth JWTs, so the gateway must not verify JWTs.
+project_id = "levisbotuniverse"
+
+[functions.bankingAuth]
+verify_jwt = false
+
+[functions.bankingPassword]
+verify_jwt = false
+
+[functions.foundryOps]
+verify_jwt = false
+
+[functions.operatorAI]
+verify_jwt = false
+
+[functions.plaidApi]
+verify_jwt = false
