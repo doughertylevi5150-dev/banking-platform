@@ -111,3 +111,6 @@ client/.e2e-dist/
 .e2e-data/
 .e2e-*.log
 .e2e-*.png
+
+# The production client env holds only the public functions URL; keep it in git.
+!client/.env.production
