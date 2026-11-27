@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.maintenanceChief]
 verify_jwt = false
+
+[functions.bot-run]
+verify_jwt = false
+
+[functions.hub]
+verify_jwt = false

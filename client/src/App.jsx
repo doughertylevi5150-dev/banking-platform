@@ -12,6 +12,7 @@ import PushButton from './components/PushButton'
 // no longer download the whole console up front.
 const ActivityPage = lazy(() => import('./components/ActivityPage'))
 const BotPage = lazy(() => import('./components/BotPage'))
+const ControlHubPage = lazy(() => import('./components/ControlHubPage'))
 const Foundry = lazy(() => import('./components/Foundry'))
 const FundingPage = lazy(() => import('./components/FundingPage'))
 const OperatorPage = lazy(() => import('./components/OperatorPage'))
@@ -32,6 +33,7 @@ const pageFallback = <p className="auth-loading page-loading">Loading…</p>
 
 const NAV = [
   { key: 'console', label: 'Console', hash: '#/' },
+  { key: 'hub', label: 'Control Hub', hash: '#/hub' },
   { key: 'activity', label: 'Activity', hash: '#/activity' },
   { key: 'funding', label: 'Funding', hash: '#/funding' },
   { key: 'treasury', label: 'Treasury', hash: '#/treasury' },
@@ -41,7 +43,7 @@ const NAV = [
 ]
 
 // Shown in the topbar so it is obvious which build the browser is running.
-const BUILD = 'v20'
+const BUILD = 'v21'
 
 function readRoute() {
   const empty = new URLSearchParams()
@@ -59,6 +61,7 @@ function readRoute() {
 
   const [head, tail] = path.split('/')
   if (head === 'store') return { name: 'store', query }
+  if (head === 'hub') return { name: 'hub', query }
   if (head === 'activity') return { name: 'activity', query }
   if (head === 'funding') return { name: 'funding', route: tail || '', query }
   if (head === 'treasury') return { name: 'treasury', query }
@@ -396,7 +399,7 @@ function App() {
           </button>
           <LoginButton label="Password" onClick={() => setPasswordOpen(true)} ariaLabel="Change your password" />
           <LoginButton label="Log out" onClick={handleSignOut} />
-          <PushButton onClick={() => jumpToSection('foundry')}>Control hub</PushButton>
+          <PushButton onClick={() => { window.location.hash = '#/hub' }}>Control hub</PushButton>
           {runNote && <span className="session-chip" role="status">{runNote}</span>}
         </div>
       </header>
@@ -433,6 +436,7 @@ function App() {
           </>
         )}
 
+        {route.name === 'hub' && <ControlHubPage token={token} />}
         {route.name === 'activity' && <ActivityPage token={token} onJump={jumpTo} />}
         {route.name === 'funding' && <FundingPage token={token} onJump={jumpTo} focusRoute={route.route} />}
         {route.name === 'treasury' && <TreasuryPage token={token} onJump={jumpTo} />}

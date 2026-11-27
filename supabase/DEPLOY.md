@@ -185,3 +185,23 @@ curl -s -X POST https://<REF>.supabase.co/functions/v1/stripeCheckout \
 curl -s -X POST https://<REF>.supabase.co/functions/v1/maintenanceChief \
   -H 'content-type: application/json' -H 'x-console-token: <session token>' -d '{}'
 ```
+
+## v21: Control Hub
+
+Tables (0004_control_hub.sql, RLS on, service role only): `bots`, `bot_runs`, `approvals`.
+0005_gemini_key_vault.sql adds `set_gemini_key` / `get_gemini_key` (service role only) so the
+Gemini key can live encrypted in Supabase Vault.
+
+| Function | Session | Actions |
+|---|---|---|
+| bot-run | owner for test/live bots; public only for `missedcall-bot` when live (rate limited 12/10 min and 60/day per visitor, 400/day total) | `{ slug, message, history?, lead? }` |
+| hub | owner | list, setStatus, runs, thumbs, approvals, decide, setAiKey |
+
+AI: Google Gemini (`GEMINI_MODEL`, default gemini-2.5-flash). Key from function secret
+`GEMINI_API_KEY`, else Vault (set it from Control Hub → "Connect"). Without a key bot-run answers
+503 "AI key not connected yet".
+
+Hard rule: bots never buy, sell, spend or commit. Such requests become `approvals` rows (pending);
+deciding one in the hub records the decision only. Nothing in this build moves money.
+
+Bots are seeded from the LevisBotUniverse roster with scripts/seed_bots.py (upsert; never changes status).
