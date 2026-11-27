@@ -121,8 +121,8 @@ async function gemini(system: string, turns: Turn[], wantJson: boolean) {
   const key = await geminiKey();
   if (!key) return { error: 'AI key not connected yet. Paste the free Gemini key in the box at the top of the Control Hub.', status: 503 };
 
-  const preferred = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
-  const models = [...new Set([preferred, 'gemini-flash-latest', 'gemini-2.0-flash'])];
+  const preferred = Deno.env.get('GEMINI_MODEL') || 'gemini-3.5-flash-lite';
+  const models = [...new Set([preferred, 'gemini-3.8-flash', 'gemini-flash-latest'])];
   let lastError = 'The AI did not answer.';
 
   for (const model of models) {
