@@ -119,7 +119,7 @@ type Turn = { role: 'user' | 'model'; text: string };
 
 async function gemini(system: string, turns: Turn[], wantJson: boolean) {
   const key = await geminiKey();
-  if (!key) return { error: 'AI key not connected yet. Add GEMINI_API_KEY to the Supabase function secrets to switch the bots on.', status: 503 };
+  if (!key) return { error: 'AI key not connected yet. Paste the free Gemini key in the box at the top of the Control Hub.', status: 503 };
 
   const preferred = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
   const models = [...new Set([preferred, 'gemini-flash-latest', 'gemini-2.0-flash'])];
@@ -287,7 +287,10 @@ Deno.serve(async (req) => {
     }
 
     const ai = await gemini(system, turns, isMissedCall);
-    if ('error' in ai) return json(req, { error: ai.error, needsKey: ai.status === 503 }, ai.status as number);
+    if ('error' in ai) {
+      const publicMsg = ai.status === 503 || ai.status === 502 ? 'The demo is warming up. Please check back soon.' : ai.error;
+      return json(req, { error: source === 'owner' ? ai.error : publicMsg, needsKey: ai.status === 503 }, ai.status as number);
+    }
 
     let reply = ai.text;
     let extra: Record<string, unknown> = {};

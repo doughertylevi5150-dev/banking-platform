@@ -2767,3 +2767,4 @@ a {
   .topnav { overflow-x: auto; flex-wrap: nowrap; }
   .hub-card { padding: 12px; }
 }
+.topnav-link { white-space: nowrap; }
